@@ -62,7 +62,6 @@ body {
 
 .header-image-container {
     width: 100%;
-    /* 高度維持 400px */
     height: 400px; 
     overflow: hidden;
     background-color: #FFF8E7; 
@@ -464,6 +463,14 @@ body {
                     </a>
                 </div>
             </div>
+            
+            <div class="mt-6 bg-slate-800 rounded-3xl p-6 text-white mb-8">
+                <h3 class="font-bold text-lg mb-3"><i class="fa-solid fa-database mr-2"></i> 資料管理</h3>
+                <p class="text-xs text-slate-400 mb-4">如果您在手機上新增了行程，想更新回 GitHub 網頁版，請使用此功能。</p>
+                <button @click="generateExportCode" class="w-full py-3 bg-blue-600 rounded-xl font-bold text-sm hover:bg-blue-500 transition-colors shadow-lg">
+                    匯出網頁原始碼資料
+                </button>
+            </div>
         </div>
 
         <div v-if="currentTab === 'food'" class="animate-fade-in">
@@ -586,6 +593,17 @@ body {
             <div class="flex space-x-3 mt-6">
                 <button @click="showInfoModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button>
                 <button @click="saveInfoItem" class="flex-1 py-3 rounded-xl bg-deep-sea-blue text-white font-bold text-sm shadow-lg shadow-deep-sea-blue/30">儲存</button>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="showExportModal" class="fixed inset-0 bg-deep-sea-blue/60 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl flex flex-col max-h-[80vh]">
+            <h3 class="font-bold text-lg mb-2 text-center text-slate-800">匯出網頁原始碼</h3>
+            <p class="text-xs text-slate-500 mb-4 text-center">請複製下方代碼，取代 index.html 中 // --- [資料區塊開始] 到 // --- [資料區塊結束] 的內容。</p>
+            <textarea readonly class="w-full bg-slate-100 rounded-xl p-3 text-xs font-mono text-slate-600 outline-none flex-1 mb-4 h-48 focus:ring-2 focus:ring-blue-500" @click="$event.target.select()">{{ generatedCode }}</textarea>
+            <div class="flex space-x-3">
+                <button @click="showExportModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">關閉</button>
             </div>
         </div>
     </div>
@@ -726,7 +744,7 @@ body {
 </div>
 
 <script>
-const { createApp, ref, computed, onMounted } = Vue
+const { createApp, ref, computed, onMounted, watch } = Vue
 
 createApp({
     setup() {
@@ -753,6 +771,8 @@ createApp({
             { date: '12/16', weekday: '二', hasCar: false },
             { date: '12/17', weekday: '三', hasCar: false }
         ]);
+        
+        // --- [資料區塊開始] --- (從這裡開始替換)
         const hotelList = ref([
             { name: '博多站前飯店 (待定)', date: '12/13 - 12/17', phone: '', address: '博多口步行5分鐘' }
         ]);
@@ -768,7 +788,6 @@ createApp({
                 { id: 104, name: '博多運河城', category: 'shopping', startTime: '~13:00', address: '博多運河城', note: '水舞秀(每30分)、3F MUJI、2F迪士尼商店、B1動漫IP/扭蛋(萬代)。', hours: '10:00-21:00', price: null, transportType: 'walk', travelTime: '15m', image: null },
                 { id: 105, name: '博多聖誕市集', category: 'sightseeing', startTime: '~18:00', address: '博多車站前廣場', note: '感受聖誕氛圍，享用熱紅酒與美食。', hours: null, price: null, transportType: 'walk', travelTime: '10m', image: null }
             ],
-            // Day 2
             [
                 { id: 201, name: '天神地下街', category: 'shopping', startTime: '10:00', address: '天神地下街', note: '九州最大地下街，150家店舖。', hours: '10:00-21:00', price: null, transportType: 'public', travelTime: '15m', image: null },
                 { id: 202, name: '百貨巡禮 (岩田屋/三越/大丸)', category: 'shopping', startTime: '~13:00', address: '岩田屋本店', note: '岩田屋(B2/3F/6F連通)、大丸(B2甜點:福砂屋/明月堂)。', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '5m', image: null },
@@ -777,7 +796,6 @@ createApp({
                 { id: 205, name: '晚餐: Nikuichi (燒肉)', category: 'food', startTime: '17:30', address: 'Nikuichi (藥院或博多店)', note: '預約時間 17:30。必點7種盛合。', hours: '16:00-00:00', price: null, transportType: 'public', travelTime: '20m', image: null },
                 { id: 206, name: '天神聖誕市集', category: 'sightseeing', startTime: '~20:00', address: '福岡市役所西側廣場', note: '續攤感受不同於博多的聖誕氣氛。', hours: null, price: null, transportType: 'walk', travelTime: '15m', image: null }
             ],
-            // Day 3
             [
                 { id: 301, name: '前往太宰府', category: 'transport', startTime: '09:00', address: '太宰府站', note: '搭乘西鐵電車前往。', hours: null, price: null, transportType: 'public', travelTime: '40m', image: null },
                 { id: 302, name: '寶滿宮 竈門神社', category: 'sightseeing', startTime: '~10:00', address: '寶滿宮 竈門神社', note: '太宰府站轉搭巴士「往內山」。求良緣、驅邪。', hours: '08:30-18:00', price: null, transportType: 'bus', travelTime: '10m', image: null },
@@ -787,7 +805,6 @@ createApp({
                 { id: 306, name: 'LaLaport 福岡 (鋼彈)', category: 'shopping', startTime: '~17:00', address: 'LaLaport 福岡', note: '看日本最大鋼彈立像(24.8m)。', hours: '10:00-21:00', price: null, transportType: 'walk', travelTime: '5m', image: null },
                 { id: 307, name: '晚餐: 博多華味鳥 (水炊鍋)', category: 'food', startTime: '18:15', address: '博多華味鳥 川端店', note: '預約時間 18:15 (10大2小)。', hours: '17:00-23:00', price: null, transportType: 'public', travelTime: '30m', image: null }
             ],
-            // Day 4
             [
                 { id: 401, name: '櫛田神社', category: 'sightseeing', startTime: '10:00', address: '櫛田神社', note: '博多總鎮守，展示山笠。', hours: '09:00-17:00', price: '免費', transportType: 'public', travelTime: '20m', image: null },
                 { id: 402, name: '博多車站周邊購物', category: 'shopping', startTime: '~11:30', address: 'JR博多城', note: 'AMU PLAZA(Hands)、博多阪急、KITTE博多(0101)、Deitos(拉麵街)。', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '10m', image: null },
@@ -795,7 +812,6 @@ createApp({
                 { id: 404, name: '福岡塔', category: 'sightseeing', startTime: '~16:30', address: '福岡塔', note: '日本最高海濱塔，冬季聖誕樹主題燈飾。', hours: '09:30-22:00', price: '¥1000', transportType: 'public', travelTime: '30m', image: null },
                 { id: 405, name: '福岡塔聖誕市集', category: 'sightseeing', startTime: '~18:30', address: '福岡塔前', note: '周邊區域市集活動。', hours: null, price: null, transportType: 'walk', travelTime: '5m', image: null }
             ],
-            // Day 5
             [
                 { id: 501, name: 'Check-out', category: 'accommodation', startTime: '10:00', address: '飯店', note: '辦理退房，寄放行李或前往機場寄放。', hours: null, price: null, transportType: 'walk', travelTime: null, image: null },
                 { id: 502, name: '大濠公園 & 星巴克', category: 'sightseeing', startTime: '~11:00', address: '大濠公園', note: '都市綠洲，湖畔星巴克喝咖啡。', hours: null, price: null, transportType: 'public', travelTime: '20m', image: null },
@@ -822,7 +838,7 @@ createApp({
             { text: '保險單據副本', checked: false },
             { text: '電子機票 / 訂房確認信', checked: false }
         ]);
-        const newChecklistItem = ref(''); // 新增 Checklist 項目輸入
+        const newChecklistItem = ref('');
 
         const memoText = ref('');
         const parsedLinks = computed(() => {
@@ -839,7 +855,6 @@ createApp({
             { name: 'Uniqlo / GU', image: null, note: '' }
         ]);
         
-        // 從 PDF 導入的美食資料，並補上地址
         const foodList = ref([
             { name: 'Dacomecca', note: '博多區有名麵包店，鹹甜評價高。推薦：香腸、坦都里烤雞、漢堡肉。', address: '博多區', image: null },
             { name: 'The Full Full Hakata', note: '明太子法式麵包名店，運河城步行2分。週二公休。', address: '博多運河城附近', image: null },
@@ -864,17 +879,21 @@ createApp({
             { name: '寶雲亭', note: '一口餃子，外皮薄透。只靠洋蔥韭黃絞肉提味。', address: '中洲本店', image: null },
             { name: '海木豆皮壽司', note: '豆皮壽司界的愛馬仕。只收現金。', address: '渡邊通', image: null }
         ]);
-        const foodEditIndex = ref(null); // 追蹤正在編輯的美食索引
-
         const expenses = ref([
             { name: '機票 (虎航)', amount: 12000, category: 'flight', date: '2025-10-10', payment: 'card' },
         ]);
-        // 狀態控制
+        // --- [資料區塊結束] ---
+
+        const foodEditIndex = ref(null);
+        
         const selectedDateIndex = ref(0);
         const showShoppingModal = ref(false);
         const showFoodModal = ref(false); 
         const showExpenseModal = ref(false);
         const showItineraryModal = ref(false);
+        const showExportModal = ref(false); // 匯出 Modal
+        const generatedCode = ref(''); // 產生的程式碼
+
         const isEditMode = ref(false);
         const showInfoModal = ref(false);
         const infoModalType = ref('flight');
@@ -916,12 +935,10 @@ createApp({
             else if (currentTab.value === 'food') { resetFoodForm(); showFoodModal.value = true; } 
             else if (currentTab.value === 'expenses') { resetExpenseForm(); showExpenseModal.value = true; }
         };
-        // Info Modal Functions
         const openInfoModal = (type) => {
             infoModalType.value = type;
             isEditMode.value = false;
             infoEditIndex.value = null;
-            // Reset form
             infoForm.value = { origin: '', dest: '', code: '', depTime: '', arrTime: '', name: '', date: '', address: '', phone: '' };
             showInfoModal.value = true;
         };
@@ -961,7 +978,6 @@ createApp({
         const removeFlight = (index) => { if(confirm('確定刪除此航班資訊？')) flightList.value.splice(index, 1); };
         const removeHotel = (index) => { if(confirm('確定刪除此住宿資訊？')) hotelList.value.splice(index, 1); };
         
-        // Checklist Functions
         const addChecklistItem = () => {
             if (newChecklistItem.value.trim()) {
                 checkList.value.push({ text: newChecklistItem.value, checked: false });
@@ -1031,7 +1047,6 @@ createApp({
         };
         const removeShoppingItem = (idx) => shoppingList.value.splice(idx, 1);
         
-        // 美食相關 Function
         const resetFoodForm = () => { 
             isEditMode.value = false; 
             foodEditIndex.value = null; 
@@ -1040,7 +1055,6 @@ createApp({
         const editFoodItem = (index) => {
             isEditMode.value = true;
             foodEditIndex.value = index;
-            // 複製資料到表單
             newFoodItem.value = JSON.parse(JSON.stringify(foodList.value[index]));
             showFoodModal.value = true;
         };
@@ -1048,10 +1062,8 @@ createApp({
              if (!newFoodItem.value.name) return alert('請輸入店家名稱');
              
              if (isEditMode.value && foodEditIndex.value !== null) {
-                 // 編輯模式：更新現有資料
                  foodList.value[foodEditIndex.value] = { ...newFoodItem.value };
              } else {
-                 // 新增模式
                  foodList.value.push({ ...newFoodItem.value });
              }
              showFoodModal.value = false;
@@ -1072,19 +1084,87 @@ createApp({
         };
         const removeExpense = (idx) => expenses.value.splice(idx, 1);
 
-        onMounted(() => { calculateCurrency(); });
+        // --- 自動存檔功能 (LocalStorage) ---
+        const STORAGE_KEY = 'fukuoka_trip_data_v1';
+
+        const saveToStorage = () => {
+            const dataToSave = {
+                itineraryData: itineraryData.value,
+                foodList: foodList.value,
+                shoppingList: shoppingList.value,
+                expenses: expenses.value,
+                checkList: checkList.value,
+                hotelList: hotelList.value,
+                flightList: flightList.value,
+                memoText: memoText.value
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+        };
+
+        // 監聽資料變化
+        watch(
+            [itineraryData, foodList, shoppingList, expenses, checkList, hotelList, flightList, memoText],
+            () => { saveToStorage(); },
+            { deep: true }
+        );
+
+        const loadFromStorage = () => {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if(parsed.itineraryData) itineraryData.value = parsed.itineraryData;
+                    if(parsed.foodList) foodList.value = parsed.foodList;
+                    if(parsed.shoppingList) shoppingList.value = parsed.shoppingList;
+                    if(parsed.expenses) expenses.value = parsed.expenses;
+                    if(parsed.checkList) checkList.value = parsed.checkList;
+                    if(parsed.hotelList) hotelList.value = parsed.hotelList;
+                    if(parsed.flightList) flightList.value = parsed.flightList;
+                    if(parsed.memoText) memoText.value = parsed.memoText;
+                } catch (e) {
+                    console.error('讀取存檔失敗', e);
+                }
+            }
+        };
+
+        // --- 匯出功能 ---
+        const generateExportCode = () => {
+            // 產生 JSON stringify 的字串，並加上 const xxx = ref(...)
+            let code = `// --- [資料區塊開始] ---\n`;
+            code += `        const hotelList = ref(${JSON.stringify(hotelList.value, null, 4)});\n`;
+            code += `        const flightList = ref(${JSON.stringify(flightList.value, null, 4)});\n`;
+            code += `        const itineraryData = ref(${JSON.stringify(itineraryData.value, null, 4)});\n`;
+            code += `        const weatherData = ref(${JSON.stringify(weatherData.value, null, 4)});\n`;
+            code += `        const checkList = ref(${JSON.stringify(checkList.value, null, 4)});\n`;
+            code += `        const newChecklistItem = ref('');\n\n`;
+            code += `        const memoText = ref(${JSON.stringify(memoText.value)});\n`;
+            code += `        const parsedLinks = computed(() => {\n            if (!memoText.value) return [];\n            const urlRegex = /(https?:\\/\\/[^\\s]+)/g;\n            return memoText.value.match(urlRegex) || [];\n        });\n`;
+            code += `        const shoppingList = ref(${JSON.stringify(shoppingList.value, null, 4)});\n\n`;
+            code += `        const foodList = ref(${JSON.stringify(foodList.value, null, 4)});\n`;
+            code += `        const expenses = ref(${JSON.stringify(expenses.value, null, 4)});\n`;
+            code += `        // --- [資料區塊結束] ---`;
+            
+            generatedCode.value = code;
+            showExportModal.value = true;
+        };
+
+        onMounted(() => { 
+            loadFromStorage();
+            calculateCurrency(); 
+        });
+
         return {
             currentTab, dates, selectedDateIndex, currentItinerary, hotelList, flightList, shoppingList, expenses, weatherData,
             foodList, 
             currencyInput, currencyResult, totalExpensesJPY, totalExpensesTWD, EXCHANGE_RATE,
             checkList, newChecklistItem, memoText, parsedLinks,
-            showShoppingModal, showExpenseModal, showItineraryModal, showInfoModal, showFoodModal, isEditMode, 
-            newShoppingItem, newExpense, newItinerary, newFoodItem, infoForm, infoModalType, 
+            showShoppingModal, showExpenseModal, showItineraryModal, showInfoModal, showFoodModal, showExportModal, isEditMode, 
+            newShoppingItem, newExpense, newItinerary, newFoodItem, infoForm, infoModalType, generatedCode,
             calculateCurrency, formatNumber, getCategoryColor, getCategoryIcon, getCategoryLabel, getWeatherIcon, getWeatherDescription, getTransportIcon,
             handleAddClick, handleImageUpload, addShoppingItem, removeShoppingItem, addExpense, removeExpense, editItem, saveItineraryItem, removeItineraryItem, moveItineraryUp, moveItineraryDown, openMap, openMapDirections,
             openInfoModal, editInfoItem, saveInfoItem, removeFlight, removeHotel,
-            addFoodItem, removeFoodItem, editFoodItem, resetFoodForm, // Food Actions
-            addChecklistItem, removeChecklistItem // Checklist Actions
+            addFoodItem, removeFoodItem, editFoodItem, resetFoodForm, 
+            addChecklistItem, removeChecklistItem, generateExportCode
         };
     }
 }).mount('#app');
