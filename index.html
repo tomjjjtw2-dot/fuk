@@ -815,455 +815,455 @@ createApp({
         ]);
         // --- [資料區塊開始] --- (從這裡開始替換)
         const hotelList = ref([
-            {
-                "name": "HOTEL WA HAKATA",
-                "date": "12/13 - 12/17",
-                "address": "7-3 Tenyamachi, Hakata Ward, Fukuoka, 812-0025日本",
-                "phone": "+81 92-409-4892"
-            }
-        ]);
+    {
+        "name": "HOTEL WA HAKATA",
+        "date": "12/13 - 12/17",
+        "address": "7-3 Tenyamachi, Hakata Ward, Fukuoka, 812-0025日本",
+        "phone": "+81 92-409-4892"
+    }
+]);
         const flightList = ref([
-            {
-                "origin": "TPE 桃園",
-                "dest": "FUK 福岡",
-                "depTime": "06:45",
-                "arrTime": "10:00",
-                "code": "IT240"
-            },
-            {
-                "origin": "FUK 福岡",
-                "dest": "TPE 桃園",
-                "code": "JX841",
-                "depTime": "19:10",
-                "arrTime": "20:50"
-            }
-        ]);
+    {
+        "origin": "TPE 桃園",
+        "dest": "FUK 福岡",
+        "depTime": "06:45",
+        "arrTime": "10:00",
+        "code": "IT240"
+    },
+    {
+        "origin": "FUK 福岡",
+        "dest": "TPE 桃園",
+        "code": "JX841",
+        "depTime": "19:10",
+        "arrTime": "20:50"
+    }
+]);
         const itineraryData = ref([
-            [
-                {
-                    "id": 101,
-                    "name": "桃園機場報到",
-                    "category": "flight",
-                    "startTime": "04:45",
-                    "address": "桃園國際機場 T1",
-                    "note": "Tigerair IT240 06:45起飛",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "flight",
-                    "travelTime": null,
-                    "image": "images/fu-1.jpg"
-                },
-                {
-                    "id": 102,
-                    "name": "福岡機場 (FUK) 抵達",
-                    "category": "flight",
-                    "startTime": "10:00",
-                    "address": "福岡機場",
-                    "note": "入境審查、領取行李",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "flight",
-                    "travelTime": "2h15m",
-                    "image": "images/fu-2.jpg"
-                },
-                {
-                    "id": 103,
-                    "name": "前往飯店 Check-in/寄放行李",
-                    "category": "accommodation",
-                    "startTime": "11:00",
-                    "address": "HOTEL WA HAKATA",
-                    "note": "先安置行李",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "other",
-                    "travelTime": "20m",
-                    "image": "images/fu-3.jpg"
-                },
-                {
-                    "id": 104,
-                    "name": "博多運河城",
-                    "category": "shopping",
-                    "startTime": "12:00",
-                    "address": "博多運河城",
-                    "note": "水舞秀(每30分)、3F MUJI、2F迪士尼商店、B1動漫IP/扭蛋(萬代)。",
-                    "hours": "10:00-21:00",
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": "12m",
-                    "image": "images/fu-4.jpg"
-                },
-                {
-                    "id": 105,
-                    "name": "中央光之森林",
-                    "category": "sightseeing",
-                    "startTime": "19:00",
-                    "address": "天神中央公園",
-                    "note": "透過眾多裝飾、燈光璀璨營造出夢幻般的氛圍",
-                    "hours": "12:00-23:00",
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": "13m",
-                    "image": "images/fu-21.jpg"
-                }
-            ],
-            [
-                {
-                    "id": 201,
-                    "name": "天神地下街",
-                    "category": "shopping",
-                    "startTime": "10:00",
-                    "address": "天神地下街",
-                    "note": "九州最大地下街，150家店舖。",
-                    "hours": "10:00-21:00",
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "15m",
-                    "image": "images/fu-6.jpg"
-                },
-                {
-                    "id": 202,
-                    "name": "百貨巡禮 (岩田屋/三越/大丸)",
-                    "category": "shopping",
-                    "startTime": "13:00",
-                    "address": "岩田屋本店",
-                    "note": "岩田屋(B2/3F/6F連通)\n大丸(B2甜點:福砂屋/明月堂/如水庵)。",
-                    "hours": "10:00-20:00",
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": "5m",
-                    "image": "images/fu-7.jpg"
-                },
-                {
-                    "id": 203,
-                    "name": "福岡PARCO",
-                    "category": "shopping",
-                    "startTime": "15:00",
-                    "address": "福岡PARCO",
-                    "note": "年輕潮牌、動畫周邊與生活風格選物集中地。",
-                    "hours": "10:00-20:30",
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": "5m",
-                    "image": "images/fu-8.jpg"
-                },
-                {
-                    "id": 204,
-                    "name": "Mina 天神",
-                    "category": "shopping",
-                    "startTime": "16:30",
-                    "address": "Mina 天神",
-                    "note": "九州最大 UNIQLO、GU、LOFT。",
-                    "hours": "10:00-20:00",
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": "5m",
-                    "image": "images/fu-9.jpg"
-                },
-                {
-                    "id": 205,
-                    "name": "晚餐: Nikuichi (燒肉)",
-                    "category": "food",
-                    "startTime": "17:30",
-                    "address": "にく屋 肉いち",
-                    "note": "預約時間 17:30。必點7種盛合。",
-                    "hours": "16:00-00:00",
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "20m",
-                    "image": "images/fu-10.jpg"
-                },
-                {
-                    "id": 206,
-                    "name": "博多聖誕市集-光之街",
-                    "category": "sightseeing",
-                    "startTime": "19:00",
-                    "address": "JR博多站前廣場",
-                    "note": "續攤感受不同於博多的聖誕氣氛。",
-                    "hours": "12:00~23:00",
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": "15m",
-                    "image": "images/fu-5.jpg"
-                }
-            ],
-            [
-                {
-                    "id": 301,
-                    "name": "前往太宰府",
-                    "category": "transport",
-                    "startTime": "10:00",
-                    "address": "太宰府站",
-                    "note": "搭乘西鐵電車前往(9點出門)。",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "40m",
-                    "image": "images/fu-12.jpg"
-                },
-                {
-                    "id": 302,
-                    "name": "寶滿宮 竈門神社",
-                    "category": "sightseeing",
-                    "startTime": "10:40",
-                    "address": "寶滿宮 竈門神社",
-                    "note": "太宰府站轉搭巴士「往內山」。求良緣、驅邪。             \n西鐵太宰府站左邊斜對面(福岡銀行)搭乘\n(一小時2班，25分與55分)",
-                    "hours": "08:30-18:00",
-                    "price": null,
-                    "transportType": "bus",
-                    "travelTime": "10m",
-                    "image": "images/fu-13.jpg",
-                    "isNoteExpanded": true
-                },
-                {
-                    "id": 303,
-                    "name": "天開稻荷神社",
-                    "category": "sightseeing",
-                    "startTime": "11:30",
-                    "address": "天開稻荷神社",
-                    "note": "九州最古老稻荷神社，有奧之院山洞。",
-                    "hours": "06:30-18:30",
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": "30m",
-                    "image": "images/fu-14.jpg"
-                },
-                {
-                    "id": 304,
-                    "name": "太宰府天滿宮 & 表參道",
-                    "category": "sightseeing",
-                    "startTime": "13:00",
-                    "address": "太宰府天滿宮",
-                    "note": "御神牛、太鼓橋、隈研吾星巴克、梅枝餅。午餐: 暖暮拉麵或一蘭(五角碗)。",
-                    "hours": "06:30-19:00",
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": "10m",
-                    "image": "images/fu-15.jpg"
-                },
-                {
-                    "id": 305,
-                    "name": "前往 LaLaport 福岡",
-                    "category": "transport",
-                    "startTime": "15:00",
-                    "address": "LaLaport 福岡",
-                    "note": "搭乘西鐵/巴士前往。",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "50m",
-                    "image": "images/fu-16.jpg"
-                },
-                {
-                    "id": 307,
-                    "name": "晚餐: 博多華味鳥 (水炊鍋)",
-                    "category": "food",
-                    "startTime": "18:15",
-                    "address": "水たき料亭 博多華味鳥 川端通り店",
-                    "note": "預約時間 18:15 (10大2小)。",
-                    "hours": "17:00-23:00",
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "40m",
-                    "image": "images/fu-17.jpg"
-                },
-                {
-                    "id": 1764922841025,
-                    "name": "天神聖誕市集",
-                    "category": "sightseeing",
-                    "startTime": "20:00",
-                    "hours": "12:00~23:00",
-                    "address": "天神聖誕市集",
-                    "price": "",
-                    "note": "穿過拱門，映入眼簾的是一個沐浴在光芒中的世界",
-                    "transportType": "walk",
-                    "travelTime": "15m",
-                    "isNoteExpanded": false,
-                    "image": "images/fu-11.jpg"
-                }
-            ],
-            [
-                {
-                    "id": 401,
-                    "name": "櫛田神社",
-                    "category": "sightseeing",
-                    "startTime": "10:00",
-                    "address": "櫛田神社",
-                    "note": "博多總鎮守，展示山笠。",
-                    "hours": "09:00-17:00",
-                    "price": "免費",
-                    "transportType": "public",
-                    "travelTime": "20m",
-                    "image": "images/fu-18.jpg"
-                },
-                {
-                    "id": 402,
-                    "name": "博多車站周邊購物",
-                    "category": "shopping",
-                    "startTime": "~11:30",
-                    "address": "JR博多城",
-                    "note": "AMU PLAZA(Hands)、博多阪急、KITTE博多、Deitos(拉麵街)。",
-                    "hours": "10:00-20:00",
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "10m",
-                    "image": "images/fu-19.jpg"
-                },
-                {
-                    "id": 404,
-                    "name": "福岡塔",
-                    "category": "sightseeing",
-                    "startTime": "16:30",
-                    "address": "福岡塔",
-                    "note": "日本最高海濱塔，冬季聖誕樹主題燈飾。",
-                    "hours": "09:30-22:00",
-                    "price": "¥1000",
-                    "transportType": "public",
-                    "travelTime": "40m",
-                    "image": "images/fu-20.jpg"
-                },
-                {
-                    "id": 405,
-                    "name": "天神屋台",
-                    "category": "sightseeing",
-                    "startTime": "19:30",
-                    "address": "天神屋台",
-                    "note": "體驗屋台文化",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "bus",
-                    "travelTime": "30m",
-                    "image": ""
-                }
-            ],
-            [
-                {
-                    "id": 501,
-                    "name": "Check-out",
-                    "category": "accommodation",
-                    "startTime": "10:00",
-                    "address": "hotel wa hakata",
-                    "note": "辦理退房，寄放行李或前往機場寄放。",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "walk",
-                    "travelTime": null,
-                    "image": null
-                },
-                {
-                    "id": 502,
-                    "name": "大濠公園 & 星巴克",
-                    "category": "sightseeing",
-                    "startTime": "11:00",
-                    "address": "大濠公園",
-                    "note": "都市綠洲，湖畔星巴克喝咖啡。",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "30m",
-                    "image": "images/fu-22.jpg"
-                },
-                {
-                    "id": 503,
-                    "name": "壹岐神社 (備案)",
-                    "category": "sightseeing",
-                    "startTime": "~13:00",
-                    "address": "壱岐神社 一の鳥居",
-                    "note": "海邊鳥居，散步聽海浪。",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "30m",
-                    "image": "images/fu-23.jpg"
-                },
-                {
-                    "id": 504,
-                    "name": "前往福岡機場",
-                    "category": "transport",
-                    "startTime": "15:00",
-                    "address": "福岡機場",
-                    "note": "預備搭機返台。",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "public",
-                    "travelTime": "40m",
-                    "image": "images/fu-2.jpg"
-                },
-                {
-                    "id": 505,
-                    "name": "返程班機",
-                    "category": "flight",
-                    "startTime": "待定",
-                    "address": "福岡機場",
-                    "note": "平安歸賦。",
-                    "hours": null,
-                    "price": null,
-                    "transportType": "flight",
-                    "travelTime": null,
-                    "image": null
-                }
-            ]
-        ]);
+    [
+        {
+            "id": 101,
+            "name": "桃園機場報到",
+            "category": "flight",
+            "startTime": "04:45",
+            "address": "桃園國際機場 T1",
+            "note": "Tigerair IT240 06:45起飛",
+            "hours": null,
+            "price": null,
+            "transportType": "flight",
+            "travelTime": null,
+            "image": "images/fu-1.jpg"
+        },
+        {
+            "id": 102,
+            "name": "福岡機場 (FUK) 抵達",
+            "category": "flight",
+            "startTime": "10:00",
+            "address": "福岡機場",
+            "note": "入境審查、領取行李",
+            "hours": null,
+            "price": null,
+            "transportType": "flight",
+            "travelTime": "2h15m",
+            "image": "images/fu-2.jpg"
+        },
+        {
+            "id": 103,
+            "name": "前往飯店 Check-in/寄放行李",
+            "category": "accommodation",
+            "startTime": "11:00",
+            "address": "HOTEL WA HAKATA",
+            "note": "先安置行李",
+            "hours": null,
+            "price": null,
+            "transportType": "other",
+            "travelTime": "20m",
+            "image": "images/fu-3.jpg"
+        },
+        {
+            "id": 104,
+            "name": "博多運河城",
+            "category": "shopping",
+            "startTime": "12:00",
+            "address": "博多運河城",
+            "note": "水舞秀(每30分)、3F MUJI、2F迪士尼商店、B1動漫IP/扭蛋(萬代)。",
+            "hours": "10:00-21:00",
+            "price": null,
+            "transportType": "walk",
+            "travelTime": "12m",
+            "image": "images/fu-4.jpg"
+        },
+        {
+            "id": 105,
+            "name": "中央光之森林",
+            "category": "sightseeing",
+            "startTime": "19:00",
+            "address": "天神中央公園",
+            "note": "透過眾多裝飾、燈光璀璨營造出夢幻般的氛圍",
+            "hours": "12:00-23:00",
+            "price": null,
+            "transportType": "walk",
+            "travelTime": "13m",
+            "image": "images/fu-21.jpg"
+        }
+    ],
+    [
+        {
+            "id": 201,
+            "name": "天神地下街",
+            "category": "shopping",
+            "startTime": "10:00",
+            "address": "天神地下街",
+            "note": "九州最大地下街，150家店舖。",
+            "hours": "10:00-21:00",
+            "price": null,
+            "transportType": "public",
+            "travelTime": "15m",
+            "image": "images/fu-6.jpg"
+        },
+        {
+            "id": 202,
+            "name": "百貨巡禮 (岩田屋/三越/大丸)",
+            "category": "shopping",
+            "startTime": "13:00",
+            "address": "岩田屋本店",
+            "note": "岩田屋(B2/3F/6F連通)\n大丸(B2甜點:福砂屋/明月堂/如水庵)。",
+            "hours": "10:00-20:00",
+            "price": null,
+            "transportType": "walk",
+            "travelTime": "5m",
+            "image": "images/fu-7.jpg"
+        },
+        {
+            "id": 203,
+            "name": "福岡PARCO",
+            "category": "shopping",
+            "startTime": "15:00",
+            "address": "福岡PARCO",
+            "note": "年輕潮牌、動畫周邊與生活風格選物集中地。",
+            "hours": "10:00-20:30",
+            "price": null,
+            "transportType": "walk",
+            "travelTime": "5m",
+            "image": "images/fu-8.jpg"
+        },
+        {
+            "id": 204,
+            "name": "Mina 天神",
+            "category": "shopping",
+            "startTime": "16:30",
+            "address": "Mina 天神",
+            "note": "九州最大 UNIQLO、GU、LOFT。",
+            "hours": "10:00-20:00",
+            "price": null,
+            "transportType": "walk",
+            "travelTime": "5m",
+            "image": "images/fu-9.jpg"
+        },
+        {
+            "id": 205,
+            "name": "晚餐: Nikuichi (燒肉)",
+            "category": "food",
+            "startTime": "17:30",
+            "address": "にく屋 肉いち",
+            "note": "預約時間 17:30。必點7種盛合。",
+            "hours": "16:00-00:00",
+            "price": null,
+            "transportType": "public",
+            "travelTime": "20m",
+            "image": "images/fu-10.jpg"
+        },
+        {
+            "id": 206,
+            "name": "博多聖誕市集-光之街",
+            "category": "sightseeing",
+            "startTime": "19:00",
+            "address": "JR博多站前廣場",
+            "note": "續攤感受不同於博多的聖誕氣氛。",
+            "hours": "12:00~23:00",
+            "price": null,
+            "transportType": "walk",
+            "travelTime": "15m",
+            "image": "images/fu-5.jpg"
+        }
+    ],
+    [
+        {
+            "id": 301,
+            "name": "前往太宰府",
+            "category": "transport",
+            "startTime": "10:00",
+            "address": "太宰府站",
+            "note": "搭乘西鐵電車前往(9點出門)。",
+            "hours": null,
+            "price": null,
+            "transportType": "public",
+            "travelTime": "40m",
+            "image": "images/fu-12.jpg"
+        },
+        {
+            "id": 302,
+            "name": "寶滿宮 竈門神社",
+            "category": "sightseeing",
+            "startTime": "10:40",
+            "address": "寶滿宮 竈門神社",
+            "note": "太宰府站轉搭巴士「往內山」。求良緣、驅邪。             \n西鐵太宰府站左邊斜對面(福岡銀行)搭乘\n(一小時2班，25分與55分)",
+            "hours": "08:30-18:00",
+            "price": null,
+            "transportType": "bus",
+            "travelTime": "10m",
+            "image": "images/fu-13.jpg",
+            "isNoteExpanded": true
+        },
+        {
+            "id": 303,
+            "name": "天開稻荷神社",
+            "category": "sightseeing",
+            "startTime": "11:30",
+            "address": "天開稻荷神社",
+            "note": "九州最古老稻荷神社，有奧之院山洞。",
+            "hours": "06:30-18:30",
+            "price": null,
+            "transportType": "walk",
+            "travelTime": "30m",
+            "image": "images/fu-14.jpg"
+        },
+        {
+            "id": 304,
+            "name": "太宰府天滿宮 & 表參道",
+            "category": "sightseeing",
+            "startTime": "13:00",
+            "address": "太宰府天滿宮",
+            "note": "御神牛、太鼓橋、隈研吾星巴克、梅枝餅。午餐: 暖暮拉麵或一蘭(五角碗)。",
+            "hours": "06:30-19:00",
+            "price": null,
+            "transportType": "walk",
+            "travelTime": "10m",
+            "image": "images/fu-15.jpg"
+        },
+        {
+            "id": 305,
+            "name": "前往 LaLaport 福岡",
+            "category": "transport",
+            "startTime": "15:00",
+            "address": "LaLaport 福岡",
+            "note": "搭乘西鐵/巴士前往。",
+            "hours": null,
+            "price": null,
+            "transportType": "public",
+            "travelTime": "50m",
+            "image": "images/fu-16.jpg"
+        },
+        {
+            "id": 307,
+            "name": "晚餐: 博多華味鳥 (水炊鍋)",
+            "category": "food",
+            "startTime": "18:15",
+            "address": "水たき料亭 博多華味鳥 川端通り店",
+            "note": "預約時間 18:15 (10大2小)。",
+            "hours": "17:00-23:00",
+            "price": null,
+            "transportType": "public",
+            "travelTime": "40m",
+            "image": "images/fu-17.jpg"
+        },
+        {
+            "id": 1764922841025,
+            "name": "天神聖誕市集",
+            "category": "sightseeing",
+            "startTime": "20:00",
+            "hours": "12:00~23:00",
+            "address": "天神聖誕市集",
+            "price": "",
+            "note": "穿過拱門，映入眼簾的是一個沐浴在光芒中的世界",
+            "transportType": "walk",
+            "travelTime": "15m",
+            "isNoteExpanded": false,
+            "image": "images/fu-11.jpg"
+        }
+    ],
+    [
+        {
+            "id": 401,
+            "name": "櫛田神社",
+            "category": "sightseeing",
+            "startTime": "10:00",
+            "address": "櫛田神社",
+            "note": "博多總鎮守，展示山笠。",
+            "hours": "09:00-17:00",
+            "price": "免費",
+            "transportType": "public",
+            "travelTime": "20m",
+            "image": "images/fu-18.jpg"
+        },
+        {
+            "id": 402,
+            "name": "博多車站周邊購物",
+            "category": "shopping",
+            "startTime": "~11:30",
+            "address": "JR博多城",
+            "note": "AMU PLAZA(Hands)、博多阪急、KITTE博多、Deitos(拉麵街)。",
+            "hours": "10:00-20:00",
+            "price": null,
+            "transportType": "public",
+            "travelTime": "10m",
+            "image": "images/fu-19.jpg"
+        },
+        {
+            "id": 404,
+            "name": "福岡塔",
+            "category": "sightseeing",
+            "startTime": "16:30",
+            "address": "福岡塔",
+            "note": "日本最高海濱塔，冬季聖誕樹主題燈飾。",
+            "hours": "09:30-22:00",
+            "price": "¥1000",
+            "transportType": "public",
+            "travelTime": "40m",
+            "image": "images/fu-20.jpg"
+        },
+        {
+            "id": 405,
+            "name": "天神屋台",
+            "category": "sightseeing",
+            "startTime": "19:30",
+            "address": "天神屋台",
+            "note": "體驗屋台文化",
+            "hours": null,
+            "price": null,
+            "transportType": "bus",
+            "travelTime": "30m",
+            "image": ""
+        }
+    ],
+    [
+        {
+            "id": 501,
+            "name": "Check-out",
+            "category": "accommodation",
+            "startTime": "10:00",
+            "address": "hotel wa hakata",
+            "note": "辦理退房，寄放行李或前往機場寄放。",
+            "hours": null,
+            "price": null,
+            "transportType": "walk",
+            "travelTime": null,
+            "image": null
+        },
+        {
+            "id": 502,
+            "name": "大濠公園 & 星巴克",
+            "category": "sightseeing",
+            "startTime": "11:00",
+            "address": "大濠公園",
+            "note": "都市綠洲，湖畔星巴克喝咖啡。",
+            "hours": null,
+            "price": null,
+            "transportType": "public",
+            "travelTime": "30m",
+            "image": "images/fu-22.jpg"
+        },
+        {
+            "id": 503,
+            "name": "壹岐神社 (備案)",
+            "category": "sightseeing",
+            "startTime": "~13:00",
+            "address": "壱岐神社 一の鳥居",
+            "note": "海邊鳥居，散步聽海浪。",
+            "hours": null,
+            "price": null,
+            "transportType": "public",
+            "travelTime": "30m",
+            "image": "images/fu-23.jpg"
+        },
+        {
+            "id": 504,
+            "name": "前往福岡機場",
+            "category": "transport",
+            "startTime": "15:00",
+            "address": "福岡機場",
+            "note": "預備搭機返台。",
+            "hours": null,
+            "price": null,
+            "transportType": "public",
+            "travelTime": "40m",
+            "image": "images/fu-2.jpg"
+        },
+        {
+            "id": 505,
+            "name": "返程班機",
+            "category": "flight",
+            "startTime": "待定",
+            "address": "福岡機場",
+            "note": "平安歸賦。",
+            "hours": null,
+            "price": null,
+            "transportType": "flight",
+            "travelTime": null,
+            "image": null
+        }
+    ]
+]);
         const weatherData = ref([
-            {
-                "condition": "cloudy",
-                "temp": "12/6",
-                "chance": "30"
-            },
-            {
-                "condition": "sunny",
-                "temp": "11/5",
-                "chance": "10"
-            },
-            {
-                "condition": "rain",
-                "temp": "10/4",
-                "chance": "60"
-            },
-            {
-                "condition": "cloudy",
-                "temp": "9/3",
-                "chance": "20"
-            },
-            {
-                "condition": "sunny",
-                "temp": "10/4",
-                "chance": "10"
-            }
-        ]);
+    {
+        "condition": "cloudy",
+        "temp": "12/6",
+        "chance": "30"
+    },
+    {
+        "condition": "sunny",
+        "temp": "11/5",
+        "chance": "10"
+    },
+    {
+        "condition": "rain",
+        "temp": "10/4",
+        "chance": "60"
+    },
+    {
+        "condition": "cloudy",
+        "temp": "9/3",
+        "chance": "20"
+    },
+    {
+        "condition": "sunny",
+        "temp": "10/4",
+        "chance": "10"
+    }
+]);
         const checkList = ref([
-            {
-                "text": "護照 (有效期6個月以上)",
-                "checked": false
-            },
-            {
-                "text": "Visit Japan Web 填寫",
-                "checked": false
-            },
-            {
-                "text": "日幣現金 / 信用卡",
-                "checked": false
-            },
-            {
-                "text": "行動電源 & 充電線",
-                "checked": false
-            },
-            {
-                "text": "個人常備藥品",
-                "checked": false
-            },
-            {
-                "text": "電子機票 / 訂房確認信",
-                "checked": false
-            },
-            {
-                "text": "eSIM卡/漫遊開通",
-                "checked": false
-            },
-            {
-                "text": "旅遊衣物",
-                "checked": false
-            }
-        ]);
+    {
+        "text": "護照 (有效期6個月以上)",
+        "checked": false
+    },
+    {
+        "text": "Visit Japan Web 填寫",
+        "checked": false
+    },
+    {
+        "text": "日幣現金 / 信用卡",
+        "checked": false
+    },
+    {
+        "text": "行動電源 & 充電線",
+        "checked": false
+    },
+    {
+        "text": "個人常備藥品",
+        "checked": false
+    },
+    {
+        "text": "電子機票 / 訂房確認信",
+        "checked": false
+    },
+    {
+        "text": "eSIM卡/漫遊開通",
+        "checked": false
+    },
+    {
+        "text": "旅遊衣物",
+        "checked": false
+    }
+]);
         const newChecklistItem = ref('');
 
         const memoText = ref("");
@@ -1273,151 +1273,262 @@ createApp({
             return memoText.value.match(urlRegex) || [];
         });
         const shoppingList = ref([
-            {
-                "name": "明月堂博多TORIMON",
-                "image": null,
-                "note": "這是福岡最經典最具代表性的伴手禮，有著奶香的餅皮與優質的白餡做成的通 是福岡的人氣土產。"
-            },
-            {
-                "name": "東雲堂 二〇加煎餅",
-                "image": null,
-                "note": "用好品質的小麥粉與蛋烤成的煎餅，累積至今已經賣了10億份以上。這個半臉面具已成為福岡的經典"
-            }
-        ]);
+    {
+        "name": "明月堂博多TORIMON",
+        "image": "images/BUY-1.jpg",
+        "note": "這是福岡最經典最具代表性的伴手禮，有著奶香的餅皮與優質的白餡做成的通 是福岡的人氣土產。\n參考價格：5入770日幣、6入1,000日幣、9入1,500日幣"
+    },
+    {
+        "name": "東雲堂 二〇加煎餅",
+        "image": "images/BUY-2.jpg",
+        "note": "用好品質的小麥粉與蛋烤成的煎餅，累積至今已經賣了10億份以上。這個半臉面具已成為福岡的經典\n參考價格：特大煎餅3枚入648日圓、小煎餅16枚入864日圓"
+    },
+    {
+        "name": "太宰府梅枝餅",
+        "image": "images/BUY-3.jpg",
+        "note": "在太宰府的梅枝餅名店「 の家」、「茶房 」、「甘木屋」和「 武本店」都可以買到梅枝餅的土 禮盒，而「 の家」在博多站裡也買得到"
+    },
+    {
+        "name": "福太郎 明太子仙貝",
+        "image": "images/BUY-4.jpg",
+        "note": "福太郎的代表商品是各種口味的明太子仙貝。除了禮盒裝，還有一包一包的分裝，所以可以一次網羅各種口味。\n參考價格：2袋入180日幣、8袋入600日幣、16袋入1,200日幣"
+    },
+    {
+        "name": "博多風美庵 明太子蝦餅",
+        "image": "images/BUY-5.jpg",
+        "note": "用日本產的米以特殊的製法絞碎後再烤成的明太子蝦餅，有著酥脆的口感，是明太子系列商品的人氣選擇。"
+    },
+    {
+        "name": "明太子名店ふくや",
+        "image": "images/BUY-6.jpg",
+        "note": "各式各樣的明太子製品，其中可以直接擠出明太子醬的tubetube跟明太子口味的麵包脆餅是人氣商品。"
+    },
+    {
+        "name": "如水庵 筑紫もち",
+        "image": "images/BUY-7.jpg",
+        "note": "天正年間（1573～1591）開始在博多販賣和菓子的傳聞，現在最具代表性的名物便是筑紫麻糬。\n參考價格：3入584日幣、5入972日幣"
+    },
+    {
+        "name": "石村萬盛堂 鶴乃子",
+        "image": "images/BUY-8.jpg",
+        "note": "傳承百年以上的博多名菓，用棉花糖包覆蛋黃與手亡豆做成的內餡，是西日融合的圓形菓子。\n參考價格：4入756日圓、8入1,296日圓"
+    },
+    {
+        "name": "吉野堂 ひよ子のたまご",
+        "image": "images/BUY-9.jpg",
+        "note": "吉野堂有名的小雞蛋糕在博多站與小倉站有福岡限定口味的伴手禮-內餡為甘王草莓的「小雞的蛋」，如果覺得小雞蛋糕會太甜的話，可以試試這個略帶酸味的草莓糕點。"
+    },
+    {
+        "name": "左衛門 博多ぶらぶら",
+        "image": "images/BUY-10.jpg",
+        "note": "用北海道的紅豆包覆「求肥」，帶出自然簡單風味的博多名菓。\n所謂的求肥是指使用白玉粉做的甜點，口感比麻糬更為柔軟。"
+    },
+    {
+        "name": "鈴懸 鈴乃〇餅",
+        "image": "images/BUY-11.jpg",
+        "note": "和菓子名店鈴懸的代表性商品，使用佐賀產的糯米，手工燒烤的皮中是北海道十勝產的紅豆餡。"
+    },
+    {
+        "name": "隆勝堂 鯛最中",
+        "image": "images/BUY-12.jpg",
+        "note": "用有吉祥寓意的鯛做成的「最中」，裡面是自家製的八女抹茶餡，意外的和最中的皮很合"
+    },
+    {
+        "name": " 久原本家 茅乃舍だし",
+        "image": "images/BUY-13.jpg",
+        "note": "以烤飛魚、柴魚片、沙丁魚和昆布的粉末做成的素材包，讓你能方便的煮出道地的和風高湯。無論是味增湯還是其他煮物中都可以使用並增添其料理的風味。"
+    },
+    {
+        "name": " 二鶴堂 博多の女（ひと",
+        "image": "images/BUY-15.jpg",
+        "note": "以年輪蛋糕包裹羊羹之創新組合，搭配典雅的博多人形包裝，熱賣超過50年的福岡名產\n參考價格：6入389日圓、10入648日圓"
+    },
+    {
+        "name": "三日月 可頌麵包",
+        "image": "images/BUY-16.jpg",
+        "note": "使用高品質的三種小麥粉、天然鹽、高級奶油與天然酵母去製作麵團，並讓麵團在將近一天的低溫發酵中引出食材自然的美味。"
+    },
+    {
+        "name": "さかえ屋 なんばん往来",
+        "image": "images/BUY-17.jpg",
+        "note": "過去長崎對國外開放，從海外引進各種原料藉由長崎街道（如同絲路）送至江戶。以這個概念將南蠻文化與九州食材結合，誕生的美味伴手禮。\n參考價格：4入864日圓、8入1,728日圓"
+    },
+    {
+        "name": "chiffon cake MARIE",
+        "image": "images/BUY-18.jpg",
+        "note": "透過九州產的小麥粉、雞蛋、牛奶，並不含其他添加物製作的戚風蛋糕，最大特色是就算冷凍販售，卻在解凍後仍保有與現做蛋糕同樣的濕潤鬆軟，像是棉花糖般在口中融化。"
+    },
+    {
+        "name": " Chocolateshop 博多の石畳",
+        "image": "images/BUY-19.jpg",
+        "note": "來自福岡自己的巧克力品牌。石畳的意思是石板，一個個生巧克力的樣子的確有幾分神似石板。"
+    },
+    {
+        "name": "PRESS BUTTER SAND",
+        "image": "images/BUY-20.jpg",
+        "note": "有推出九州限定的「甘王草莓」口味與福岡限定的「明太子起士口味」\n參考價格：5入1,377日圓、9入2,403日圓"
+    },
+    {
+        "name": " 伊都きんぐ 甘王草莓銅鑼燒",
+        "image": "images/BUY-21.jpg",
+        "note": "福岡最有名的甘王草莓伴手禮品牌，就是「伊都きんぐ」了。而這款以甘王草莓慕斯和果醬為內餡的銅鑼燒是他們家最為人氣的商品。"
+    },
+    {
+        "name": "AMANBERRY草莓奶油餅乾",
+        "image": "images/BUY-22.jpg",
+        "note": "外層貓舌餅微脆，側邊還印有英文字精緻高級，裡面是香甜柔滑生巧克力奶油，點綴淡淡甘王草莓乾酸甜果香\n參考價格：5入864日圓、8入1,296日圓"
+    },
+    {
+        "name": "YAMAYA軟管明太子醬",
+        "image": "images/BUY-23.jpg",
+        "note": "熱銷超過百萬隻，牙膏式軟管方便擠壓料理，最夯粉色包裝「辛子明太子」口味，搭配法國麵包、明太子義大利麵、串燒、白飯等，濃厚微辣海味口口都是極品。\n冷藏保存，建議在機場免稅店買完，直接帶回台灣，參考價格：1條756日圓"
+    },
+    {
+        "name": "福砂屋長崎蛋糕",
+        "image": "images/BUY-24.jpg",
+        "note": "堅持傳統古法，職人純手工攪拌不用機器，蛋糕底部有明顯「砂糖結晶顆粒」是亮點，香甜濕潤，讓人回味無窮。\n參考價格：0.6號一條1,458日圓、1號一條2,268日圓"
+    },
+    {
+        "name": "千鳥屋本家 捲心酥",
+        "image": "images/BUY-25.jpg",
+        "note": "奥地利提洛邦傳統餅乾捲，以新鮮牛乳和奶油製成，厚實超香脆，口味有抹茶、草莓、香草、咖啡四種。\n參考價格：捲心酥1罐1,800日幣"
+    }
+]);
+
         const foodList = ref([
-            {
-                "name": "Dacomecca",
-                "note": "博多區有名麵包店，鹹甜評價高。推薦：香腸、坦都里烤雞、漢堡肉。",
-                "address": "Dacomecca",
-                "image": null
-            },
-            {
-                "name": "The Full Full Hakata",
-                "note": "明太子法式麵包名店，運河城步行2分。週二公休。",
-                "address": "The Full Full Hakata",
-                "image": null
-            },
-            {
-                "name": "MIGNON 博多店",
-                "note": "位於JR中央口。經典小可頌（巧克力、原味、地瓜）。",
-                "address": "MIGNON 博多店",
-                "image": null
-            },
-            {
-                "name": "Cafe Mutsukado",
-                "note": "AMU PLAZA 5樓。主打生吐司，推薦蛋沙拉吐司&水果三明治。",
-                "address": "Cafe Mutsukado",
-                "image": null
-            },
-            {
-                "name": "Pain Stock 天神店",
-                "note": "中洲川端站步行4分。主打天然酵母麵包，明太子法棍需櫃檯點。",
-                "address": "Pain Stock 天神店",
-                "image": null
-            },
-            {
-                "name": "Truffle Bakery",
-                "note": "木村拓哉推薦。招牌：白松露鹽麵包、黑松露蛋沙拉三明治。",
-                "address": "mills by Truffle Bakery ソラリアステージ店",
-                "image": null
-            },
-            {
-                "name": "博多一雙",
-                "note": "豚骨泡沫系，又臭又香又難忘。",
-                "address": "博多一雙",
-                "image": null
-            },
-            {
-                "name": "博多拉麵 ShinShin",
-                "note": "濃郁卻清爽不膩。招牌：純情拉麵、博多強棒麵。",
-                "address": "博多拉麵 ShinShin",
-                "image": null
-            },
-            {
-                "name": "麵屋兼虎",
-                "note": "沾麵系霸主。招牌：味玉濃厚沾麵。",
-                "address": "麵屋兼虎",
-                "image": null
-            },
-            {
-                "name": "大砲拉麵",
-                "note": "久留米70年老店。獨家豚骨湯底。招牌：昔拉麵。",
-                "address": "大砲ラーメン 天神今泉店",
-                "image": null
-            },
-            {
-                "name": "麵屋我ガ (Gaga)",
-                "note": "傳為一蘭創辦人孫子開的。湯頭較濃郁。",
-                "address": "麺屋我ガ 天神店",
-                "image": null
-            },
-            {
-                "name": "茶壺烏龍麵 (博多あかちょこべ)",
-                "note": "特殊茶壺裝盛。麵條口感獨特。",
-                "address": "茶壺烏龍麵 (博多あかちょこべ)",
-                "image": null
-            },
-            {
-                "name": "麵屋 Isii (Menya Ishii)",
-                "note": "原創烏龍麵，口感滑順。",
-                "address": "麵屋 Isii (Menya Ishii)",
-                "image": null
-            },
-            {
-                "name": "FUK COFFEE",
-                "note": "大濠公園附近/祇園。昭和風布丁口感紮實。",
-                "address": "FUK COFFEE",
-                "image": null
-            },
-            {
-                "name": "藍瓶咖啡 天神店",
-                "note": "九州第一間。警固神社旁。",
-                "address": "藍瓶咖啡 天神店",
-                "image": null
-            },
-            {
-                "name": "Coffee County",
-                "note": "專注咖啡豆產地香氣。",
-                "address": "Coffee County Fukuoka",
-                "image": null
-            },
-            {
-                "name": "Rec Coffee",
-                "note": "現代簡約。推薦拿鐵系列&硬布丁。",
-                "address": "Rec Coffee 福岡",
-                "image": null
-            },
-            {
-                "name": "かわ屋 (Kawaya)",
-                "note": "招牌烤雞皮需6天燒烤熟成。",
-                "address": "かわ屋 祇園店",
-                "image": null
-            },
-            {
-                "name": "とりかわ粋恭 (Suikyo)",
-                "note": "與Kawaya齊名，酥脆口感濃郁。",
-                "address": "とりかわ粋恭 (Suikyo)",
-                "image": null
-            },
-            {
-                "name": "博多雞皮大臣",
-                "note": "在地人氣店，分醬燒與鹽燒。",
-                "address": "博多雞皮大臣",
-                "image": null
-            },
-            {
-                "name": "寶雲亭",
-                "note": "一口餃子，外皮薄透。只靠洋蔥韭黃絞肉提味。",
-                "address": "寶雲亭",
-                "image": null
-            },
-            {
-                "name": "海木豆皮壽司",
-                "note": "豆皮壽司界的愛馬仕。只收現金。",
-                "address": "だしいなり 海木 福岡",
-                "image": null
-            }
-        ]);
+    {
+        "name": "Dacomecca",
+        "note": "博多區有名麵包店，鹹甜評價高。推薦：香腸、坦都里烤雞、漢堡肉。",
+        "address": "Dacomecca",
+        "image": "images/EAT-1.jpg"
+    },
+    {
+        "name": "The Full Full Hakata",
+        "note": "明太子法式麵包名店，運河城步行2分。週二公休。",
+        "address": "The Full Full Hakata",
+        "image": "images/EAT-2.jpg"
+    },
+    {
+        "name": "MIGNON 博多店",
+        "note": "位於JR中央口。經典小可頌（巧克力、原味、地瓜）。",
+        "address": "MIGNON 博多店",
+        "image": "images/EAT-3.jpg"
+    },
+    {
+        "name": "Cafe Mutsukado",
+        "note": "AMU PLAZA 5樓。主打生吐司，推薦蛋沙拉吐司&水果三明治。",
+        "address": "Cafe Mutsukado",
+        "image": "images/EAT-4.jpg"
+    },
+    {
+        "name": "Pain Stock 天神店",
+        "note": "中洲川端站步行4分。主打天然酵母麵包，明太子法棍需櫃檯點。",
+        "address": "Pain Stock 天神店",
+        "image": "images/EAT-5.jpg"
+    },
+    {
+        "name": "Truffle Bakery",
+        "note": "木村拓哉推薦。招牌：白松露鹽麵包、黑松露蛋沙拉三明治。",
+        "address": "mills by Truffle Bakery ソラリアステージ店",
+        "image": "images/EAT-6.jpg"
+    },
+    {
+        "name": "博多一雙",
+        "note": "豚骨泡沫系，又臭又香又難忘。",
+        "address": "博多一雙",
+        "image": "images/EAT-7.jpg"
+    },
+    {
+        "name": "博多拉麵 ShinShin",
+        "note": "濃郁卻清爽不膩。招牌：純情拉麵、博多強棒麵。",
+        "address": "博多拉麵 ShinShin",
+        "image": "images/EAT-8.jpg"
+    },
+    {
+        "name": "麵屋兼虎",
+        "note": "沾麵系霸主。招牌：味玉濃厚沾麵。",
+        "address": "麵屋兼虎",
+        "image": "images/EAT-9.jpg"
+    },
+    {
+        "name": "大砲拉麵",
+        "note": "久留米70年老店。獨家豚骨湯底。招牌：昔拉麵。",
+        "address": "大砲ラーメン 天神今泉店",
+        "image": "images/EAT-10.jpg"
+    },
+    {
+        "name": "麵屋我ガ (Gaga)",
+        "note": "傳為一蘭創辦人孫子開的。湯頭較濃郁。",
+        "address": "麺屋我ガ 天神店",
+        "image": "images/EAT-11.jpg"
+    },
+    {
+        "name": "茶壺烏龍麵 (博多あかちょこべ)",
+        "note": "特殊茶壺裝盛。麵條口感獨特。",
+        "address": "茶壺烏龍麵 (博多あかちょこべ)",
+        "image": "images/EAT-12.jpg"
+    },
+    {
+        "name": "麵屋 Isii (Menya Ishii)",
+        "note": "原創烏龍麵，口感滑順。",
+        "address": "麵屋 Isii (Menya Ishii)",
+        "image": "images/EAT-13.jpg"
+    },
+    {
+        "name": "FUK COFFEE",
+        "note": "大濠公園附近/祇園。昭和風布丁口感紮實。",
+        "address": "FUK COFFEE",
+        "image": "images/EAT-14.jpg"
+    },
+    {
+        "name": "藍瓶咖啡 天神店",
+        "note": "九州第一間。警固神社旁。",
+        "address": "藍瓶咖啡 天神店",
+        "image": "images/EAT-15.jpg"
+    },
+    {
+        "name": "Coffee County",
+        "note": "專注咖啡豆產地香氣。",
+        "address": "Coffee County Fukuoka",
+        "image": "images/EAT-16.jpg"
+    },
+    {
+        "name": "Rec Coffee",
+        "note": "現代簡約。推薦拿鐵系列&硬布丁。",
+        "address": "Rec Coffee 福岡",
+        "image": "images/EAT-17.jpg"
+    },
+    {
+        "name": "かわ屋 (Kawaya)",
+        "note": "招牌烤雞皮需6天燒烤熟成。",
+        "address": "かわ屋 祇園店",
+        "image": "images/EAT-18.jpg"
+    },
+    {
+        "name": "とりかわ粋恭 (Suikyo)",
+        "note": "與Kawaya齊名，酥脆口感濃郁。",
+        "address": "とりかわ粋恭 (Suikyo)",
+        "image": "images/EAT-19.jpg"
+    },
+    {
+        "name": "博多雞皮大臣",
+        "note": "在地人氣店，分醬燒與鹽燒。",
+        "address": "博多雞皮大臣",
+        "image": "images/EAT-20.jpg"
+    },
+    {
+        "name": "寶雲亭",
+        "note": "一口餃子，外皮薄透。只靠洋蔥韭黃絞肉提味。",
+        "address": "寶雲亭",
+        "image": "images/EAT-21.jpg"
+    },
+    {
+        "name": "海木豆皮壽司",
+        "note": "豆皮壽司界的愛馬仕。只收現金。",
+        "address": "だしいなり 海木 福岡",
+        "image": "images/EAT-22.jpg"
+    }
+]);
         const expenses = ref([]);
         // --- [資料區塊結束] ---
 
@@ -1733,3 +1844,4 @@ createApp({
 </script>
 </body>
 </html>
+
