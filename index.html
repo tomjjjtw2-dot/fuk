@@ -1761,7 +1761,7 @@ createApp({
         const removeExpense = (idx) => expenses.value.splice(idx, 1);
 
         // --- 自動存檔功能 (LocalStorage) ---
-        const STORAGE_KEY = 'fukuoka_trip_data_v2';
+        const STORAGE_KEY = 'fukuoka_trip_data_v3';
         const saveToStorage = () => {
             const dataToSave = {
                 itineraryData: itineraryData.value,
@@ -1844,4 +1844,5 @@ createApp({
 </script>
 </body>
 </html>
+
 
