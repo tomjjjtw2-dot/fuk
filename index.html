@@ -45,7 +45,8 @@ body {
     background-color: #ffffff;
     box-shadow: 0 0 30px rgba(93, 64, 55, 0.05); 
     position: relative;
-    padding-bottom: 90px;
+    /* 修改：底部留白加大，避免內容被底部導覽列遮住 */
+    padding-bottom: 100px;
 }
 
 .header-bg {
@@ -89,40 +90,7 @@ body {
     z-index: 20;
 }
 
-.side-tab-bar {
-    position: absolute;
-    bottom: 45px;
-    right: 16px;
-    z-index: 30;
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-}
-
-.tab-button {
-    width: 40px;
-    height: 40px;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.125rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.tab-button.active {
-    background-color: #01579B;
-    color: #ffffff;
-    box-shadow: 0 6px 15px rgba(1, 87, 155, 0.3);
-    transform: scale(1.05);
-}
-
-.tab-button:not(.active) {
-    background-color: #ffffff;
-    color: #90A4AE; 
-}
+/* 舊的 side-tab-bar 樣式已移除 */
 
 .app-main {
     padding-top: 25px !important;
@@ -133,7 +101,7 @@ body {
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* 自定義捲軸樣式 (給購物清單備註用) */
+/* 自定義捲軸樣式 */
 .custom-scrollbar::-webkit-scrollbar {
     width: 4px;
 }
@@ -201,6 +169,10 @@ body {
 .checkbox-wrapper input:checked + div svg {
     display: block;
 }
+/* 為了 iPhone 底部安全區域 */
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}
 </style>
 </head>
 <body>
@@ -220,23 +192,9 @@ body {
             </div>
         </div>
 
-        <div class="side-tab-bar">
-            <button @click="currentTab = 'itinerary'" title="行程" :class="{'active': currentTab === 'itinerary'}" class="tab-button">
-                <i class="fa-solid fa-map-location-dot"></i>
-            </button>
-            <button @click="currentTab = 'info'" title="資訊" :class="{'active': currentTab === 'info'}" class="tab-button">
-                 <i class="fa-solid fa-circle-info"></i>
-            </button>
-            <button @click="currentTab = 'food'" title="美食" :class="{'active': currentTab === 'food'}" class="tab-button">
-                <i class="fa-solid fa-utensils"></i>
-            </button>
-            <button @click="currentTab = 'shopping'" title="購物" :class="{'active': currentTab === 'shopping'}" class="tab-button">
-                <i class="fa-solid fa-basket-shopping"></i>
-            </button>
-            <button @click="currentTab = 'expenses'" title="花費" :class="{'active': currentTab === 'expenses'}" class="tab-button">
-                <i class="fa-solid fa-coins"></i>
-            </button>
-        </div>
+        <button @click="currentTab = 'info'" class="absolute top-4 right-4 z-30 bg-white/20 backdrop-blur-md text-white w-10 h-10 rounded-full flex items-center justify-center border border-white/30 shadow-lg">
+            <i class="fa-solid fa-circle-info"></i>
+        </button>
     </div>
 
     <main class="p-4 app-main">
@@ -321,7 +279,7 @@ body {
 
             <div v-if="currentItinerary.length === 0" class="text-center py-16 text-slate-300">
                 <i class="fa-solid fa-map-location-dot text-5xl mb-3 text-slate-200"></i>
-                <p class="text-sm">本日尚無行程<br>請點擊右下角新增</p>
+                <p class="text-sm">本日尚無行程<br>請點擊下方新增</p>
             </div>
         </div>
 
@@ -483,6 +441,9 @@ body {
             <div class="mt-6 bg-slate-800 rounded-3xl p-6 text-white mb-8">
                 <h3 class="font-bold text-lg mb-3"><i class="fa-solid fa-database mr-2"></i> 資料管理</h3>
                 <p class="text-xs text-slate-400 mb-4">如果您在手機上新增了行程，想更新回 GitHub 網頁版，請使用此功能。</p>
+                <button @click="resetData" class="w-full py-3 bg-red-600 rounded-xl font-bold text-sm hover:bg-red-500 transition-colors shadow-lg mb-3">
+                    <i class="fa-solid fa-rotate-right mr-2"></i>重置所有資料 (修復顯示問題)
+                </button>
                 <button @click="generateExportCode" class="w-full py-3 bg-blue-600 rounded-xl font-bold text-sm hover:bg-blue-500 transition-colors shadow-lg">
                     匯出網頁原始碼資料
                 </button>
@@ -525,14 +486,24 @@ body {
                 </div>
                 <div v-if="foodList.length === 0" class="col-span-2 text-center py-16 text-slate-300">
                     <i class="fa-solid fa-utensils text-5xl mb-3 text-slate-200"></i>
-                    <p class="text-sm">美食清單空白<br>請點擊右下角新增</p>
+                    <p class="text-sm">美食清單空白<br>請點擊下方新增</p>
                 </div>
             </div>
         </div>
 
         <div v-if="currentTab === 'shopping'" class="animate-fade-in">
+             <div class="sticky top-0 bg-[#FFF8E7] z-10 pb-4 pt-1">
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
+                    <input v-model="shoppingSearchQuery" type="text" placeholder="搜尋購物清單..." class="w-full bg-white rounded-xl py-3 pl-10 pr-4 shadow-sm text-sm focus:ring-2 focus:ring-deep-sea-blue outline-none border border-slate-100">
+                    <button v-if="shoppingSearchQuery" @click="shoppingSearchQuery = ''" class="absolute right-3 top-3 text-slate-300 hover:text-slate-500">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
-                <div v-for="(item, idx) in shoppingList" :key="idx" class="bg-white rounded-2xl p-3 card-shadow relative group">
+                <div v-for="(item, idx) in filteredShoppingList" :key="item.originalIndex" class="bg-white rounded-2xl p-3 card-shadow relative group">
                     
                     <div class="w-[80%] mx-auto h-32 bg-slate-50 rounded-xl mb-2 overflow-hidden relative border border-slate-100 mt-2">
                         <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
@@ -541,11 +512,11 @@ body {
                         </div>
                     </div>
 
-                    <button @click.stop="removeShoppingItem(idx)" class="absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-red-500">
+                    <button @click.stop="removeShoppingItem(item.originalIndex)" class="absolute top-2 right-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-red-500">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                     
-                    <button @click.stop="editShoppingItem(idx)" class="absolute top-2 left-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-deep-sea-blue">
+                    <button @click.stop="editShoppingItem(item.originalIndex)" class="absolute top-2 left-2 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-deep-sea-blue">
                         <i class="fa-solid fa-pencil"></i>
                     </button>
 
@@ -558,7 +529,7 @@ body {
 
                 <div v-if="shoppingList.length === 0" class="col-span-2 text-center py-16 text-slate-300">
                     <i class="fa-solid fa-bag-shopping text-5xl mb-3 text-slate-200"></i>
-                    <p class="text-sm">購物清單空白<br>請點擊右下角新增</p>
+                    <p class="text-sm">購物清單空白<br>請點擊下方新增</p>
                 </div>
             </div>
         </div>
@@ -600,11 +571,32 @@ body {
 
     </main>
 
-    <button v-if="currentTab !== 'info'" @click="handleAddClick" class="fixed bottom-6 right-6 w-14 h-14 bg-accent-yellow rounded-full fab-shadow text-deep-sea-blue text-2xl flex items-center justify-center hover:scale-110 transition-transform z-40">
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-2 flex justify-between items-center z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)] max-w-[480px] mx-auto">
+        <button @click="currentTab = 'itinerary'" class="flex flex-col items-center justify-center w-12 transition-all" :class="currentTab === 'itinerary' ? 'text-deep-sea-blue' : 'text-slate-300'">
+            <i class="fa-solid fa-map-location-dot text-xl mb-1" :class="currentTab === 'itinerary' ? 'scale-110' : ''"></i>
+            <span class="text-[10px] font-bold">行程</span>
+        </button>
+        <button @click="currentTab = 'food'" class="flex flex-col items-center justify-center w-12 transition-all" :class="currentTab === 'food' ? 'text-deep-sea-blue' : 'text-slate-300'">
+            <i class="fa-solid fa-utensils text-xl mb-1" :class="currentTab === 'food' ? 'scale-110' : ''"></i>
+            <span class="text-[10px] font-bold">美食</span>
+        </button>
+        <div class="w-12"></div>
+        
+        <button @click="currentTab = 'shopping'" class="flex flex-col items-center justify-center w-12 transition-all" :class="currentTab === 'shopping' ? 'text-deep-sea-blue' : 'text-slate-300'">
+            <i class="fa-solid fa-basket-shopping text-xl mb-1" :class="currentTab === 'shopping' ? 'scale-110' : ''"></i>
+            <span class="text-[10px] font-bold">購物</span>
+        </button>
+        <button @click="currentTab = 'expenses'" class="flex flex-col items-center justify-center w-12 transition-all" :class="currentTab === 'expenses' ? 'text-deep-sea-blue' : 'text-slate-300'">
+            <i class="fa-solid fa-coins text-xl mb-1" :class="currentTab === 'expenses' ? 'scale-110' : ''"></i>
+            <span class="text-[10px] font-bold">花費</span>
+        </button>
+    </div>
+
+    <button v-if="currentTab !== 'info'" @click="handleAddClick" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-14 h-14 bg-accent-yellow rounded-full fab-shadow text-deep-sea-blue text-2xl flex items-center justify-center hover:scale-110 transition-transform z-[60] border-4 border-white">
         <i class="fa-solid fa-plus"></i>
     </button>
 
-    <div v-if="showInfoModal" class="fixed inset-0 bg-deep-sea-blue/40 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+    <div v-if="showInfoModal" @click.self="showInfoModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">
                 {{ isEditMode ? '編輯' : '新增' }} {{ infoModalType === 'flight' ? '航班資訊' : '住宿資訊' }}
@@ -634,7 +626,7 @@ body {
         </div>
     </div>
 
-    <div v-if="showExportModal" class="fixed inset-0 bg-deep-sea-blue/60 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+    <div v-if="showExportModal" @click.self="showExportModal = false" class="fixed inset-0 bg-deep-sea-blue/60 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl flex flex-col max-h-[80vh]">
             <h3 class="font-bold text-lg mb-2 text-center text-slate-800">匯出網頁原始碼</h3>
             <p class="text-xs text-slate-500 mb-4 text-center">請複製下方代碼，取代 index.html 中 // --- [資料區塊開始] 到 // --- [資料區塊結束] 的內容。</p>
@@ -645,7 +637,7 @@ body {
         </div>
     </div>
 
-    <div v-if="showShoppingModal" class="fixed inset-0 bg-deep-sea-blue/40 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+    <div v-if="showShoppingModal" @click.self="showShoppingModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">{{ isEditMode ? '編輯' : '新增' }}購物清單</h3>
             
@@ -669,7 +661,7 @@ body {
         </div>
     </div>
 
-    <div v-if="showFoodModal" class="fixed inset-0 bg-deep-sea-blue/40 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+    <div v-if="showFoodModal" @click.self="showFoodModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">{{ isEditMode ? '編輯' : '新增' }}美食店家</h3>
             <div class="space-y-4 mb-6">
@@ -696,7 +688,7 @@ body {
         </div>
     </div>
 
-    <div v-if="showExpenseModal" class="fixed inset-0 bg-deep-sea-blue/40 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+    <div v-if="showExpenseModal" @click.self="showExpenseModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">記一筆</h3>
             <div class="grid grid-cols-2 gap-3 mb-4">
@@ -726,7 +718,7 @@ body {
         </div>
     </div>
 
-    <div v-if="showItineraryModal" class="fixed inset-0 bg-deep-sea-blue/40 z-50 flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+    <div v-if="showItineraryModal" @click.self="showItineraryModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">{{ isEditMode ? '編輯行程' : '新增行程' }}</h3>
             <div class="space-y-3">
@@ -756,15 +748,21 @@ body {
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <input v-model="newItinerary.startTime" type="text" placeholder="時間 (e.g. 09:30)" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                    <select v-model="newItinerary.transportType" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
-                        <option value="walk">步行</option>
-                        <option value="car">自駕</option>
-                        <option value="bus">巴士</option>
-                        <option value="public">地鐵/JR</option>
-                        <option value="flight">飛機</option>
-                        <option value="other">其他</option>
-                   </select>
+                    <div>
+                        <label class="text-xs text-slate-400 ml-1">開始時間</label>
+                        <input v-model="newItinerary.startTime" type="time" class="bg-slate-50 rounded-xl p-3 text-sm outline-none w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 ml-1">交通方式</label>
+                        <select v-model="newItinerary.transportType" class="bg-slate-50 rounded-xl p-3 text-sm outline-none w-full">
+                            <option value="walk">步行</option>
+                            <option value="car">自駕</option>
+                            <option value="bus">巴士</option>
+                            <option value="public">地鐵/JR</option>
+                            <option value="flight">飛機</option>
+                            <option value="other">其他</option>
+                       </select>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <input v-model="newItinerary.travelTime" type="text" placeholder="車程/移動時間" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
@@ -1394,7 +1392,6 @@ createApp({
         "note": "奥地利提洛邦傳統餅乾捲，以新鮮牛乳和奶油製成，厚實超香脆，口味有抹茶、草莓、香草、咖啡四種。\n參考價格：捲心酥1罐1,800日幣"
     }
 ]);
-
         const foodList = ref([
     {
         "name": "Dacomecca",
@@ -1548,6 +1545,22 @@ createApp({
                     (item.address && item.address.toLowerCase().includes(query))
                 );
         });
+
+        // 新增：購物搜尋功能
+        const shoppingSearchQuery = ref('');
+        const filteredShoppingList = computed(() => {
+            // 如果沒有搜尋文字，回傳全部 (帶上 originalIndex 以便刪除/編輯正確項目)
+            if (!shoppingSearchQuery.value) {
+                return shoppingList.value.map((item, index) => ({ ...item, originalIndex: index }));
+            }
+            const query = shoppingSearchQuery.value.toLowerCase();
+            return shoppingList.value
+                .map((item, index) => ({ ...item, originalIndex: index }))
+                .filter(item => 
+                    item.name.toLowerCase().includes(query) || 
+                    (item.note && item.note.toLowerCase().includes(query))
+                );
+        });
         
         const selectedDateIndex = ref(0);
         const showShoppingModal = ref(false);
@@ -1690,7 +1703,6 @@ createApp({
                 list.splice(idx + 1, 0, item);
             }
         };
-        
         const resetShoppingForm = () => { 
             isEditMode.value = false;
             shoppingEditIndex.value = null;
@@ -1716,7 +1728,6 @@ createApp({
         };
         const saveShoppingItem = () => {
             if (!newShoppingItem.value.name) return alert('請輸入名稱');
-            
             if (isEditMode.value && shoppingEditIndex.value !== null) {
                 shoppingList.value[shoppingEditIndex.value] = { ...newShoppingItem.value };
             } else {
@@ -1761,7 +1772,8 @@ createApp({
         const removeExpense = (idx) => expenses.value.splice(idx, 1);
 
         // --- 自動存檔功能 (LocalStorage) ---
-        const STORAGE_KEY = 'fukuoka_trip_data_v3';
+        // 版本更新 v4
+        const STORAGE_KEY = 'fukuoka_trip_data_v4';
         const saveToStorage = () => {
             const dataToSave = {
                 itineraryData: itineraryData.value,
@@ -1821,6 +1833,14 @@ createApp({
             showExportModal.value = true;
         };
 
+        // --- 新增重置資料功能 (方法 C) ---
+        const resetData = () => {
+            if(confirm('警告：這將會清除所有您在手機上新增的紀錄，並還原成網頁預設值。確定要重置嗎？')) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        };
+
         onMounted(() => { 
             loadFromStorage();
             calculateCurrency(); 
@@ -1828,6 +1848,7 @@ createApp({
         return {
             currentTab, dates, selectedDateIndex, currentItinerary, hotelList, flightList, shoppingList, expenses, weatherData,
             foodList, filteredFoodList, foodSearchQuery,
+            shoppingSearchQuery, filteredShoppingList, // 新增
             currencyInput, currencyResult, totalExpensesJPY, totalExpensesTWD, EXCHANGE_RATE,
             checkList, newChecklistItem, memoText, parsedLinks,
             showShoppingModal, showExpenseModal, showItineraryModal, showInfoModal, showFoodModal, showExportModal, isEditMode, 
@@ -1837,12 +1858,11 @@ createApp({
             handleAddClick, handleImageUpload, saveShoppingItem, editShoppingItem, removeShoppingItem, addExpense, removeExpense, editItem, saveItineraryItem, removeItineraryItem, moveItineraryUp, moveItineraryDown, openMap, openMapDirections,
             openInfoModal, editInfoItem, saveInfoItem, removeFlight, removeHotel,
             addFoodItem, removeFoodItem, editFoodItem, resetFoodForm, 
-            addChecklistItem, removeChecklistItem, generateExportCode
+            addChecklistItem, removeChecklistItem, generateExportCode,
+            resetData // 匯出重置功能
         };
     }
 }).mount('#app');
 </script>
 </body>
 </html>
-
-
