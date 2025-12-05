@@ -796,42 +796,42 @@ createApp({
         ]);
         const itineraryData = ref([
             [
-                { id: 101, name: '桃園機場報到', category: 'flight', startTime: '04:45', address: '桃園國際機場 T1', note: 'Tigerair IT240 06:45起飛', hours: null, price: null, transportType: 'flight', travelTime: null, image: images/桃園機場.jpg },
-                { id: 102, name: '福岡機場 (FUK) 抵達', category: 'flight', startTime: '10:00', address: '福岡機場', note: '入境審查、領取行李', hours: null, price: null, transportType: 'flight', travelTime: '2h15m', image: images/福岡機場.jpg },
-                { id: 103, name: '前往飯店 Check-in/寄放行李', category: 'accommodation', startTime: '~11:30', address: '博多/天神周邊飯店', note: '先安置行李', hours: null, price: null, transportType: 'public', travelTime: '30m', image: images/hotel wa hakata
-                    .jpg },
-                { id: 104, name: '博多運河城', category: 'shopping', startTime: '~13:00', address: '博多運河城', note: '水舞秀(每30分)、3F MUJI、2F迪士尼商店、B1動漫IP/扭蛋(萬代)。', hours: '10:00-21:00', price: null, transportType: 'walk', travelTime: '15m', image: images/博多運河城.jpg },
-                { id: 105, name: '博多聖誕市集', category: 'sightseeing', startTime: '~18:00', address: '博多車站前廣場', note: '感受聖誕氛圍，享用熱紅酒與美食。', hours: null, price: null, transportType: 'walk', travelTime: '10m', image: images/博多聖誕市集-光之街.jpg }
+                { id: 101, name: '桃園機場報到', category: 'flight', startTime: '04:45', address: '桃園國際機場 T1', note: 'Tigerair IT240 06:45起飛', hours: null, price: null, transportType: 'flight', travelTime: null, image:'images/桃園機場.jpg' },
+                { id: 102, name: '福岡機場 (FUK) 抵達', category: 'flight', startTime: '10:00', address: '福岡機場', note: '入境審查、領取行李', hours: null, price: null, transportType: 'flight', travelTime: '2h15m', image:'images/福岡機場.jpg' },
+                { id: 103, name: '前往飯店 Check-in/寄放行李', category: 'accommodation', startTime: '~11:30', address: '博多/天神周邊飯店', note: '先安置行李', hours: null, price: null, transportType: 'public', travelTime: '30m', image:'images/hotel wa hakata
+                    .jpg' },
+                { id: 104, name: '博多運河城', category: 'shopping', startTime: '~13:00', address: '博多運河城', note: '水舞秀(每30分)、3F MUJI、2F迪士尼商店、B1動漫IP/扭蛋(萬代)。', hours: '10:00-21:00', price: null, transportType: 'walk', travelTime: '15m', image:'images/博多運河城.jpg' },
+                { id: 105, name: '博多聖誕市集', category: 'sightseeing', startTime: '~18:00', address: '博多車站前廣場', note: '感受聖誕氛圍，享用熱紅酒與美食。', hours: null, price: null, transportType: 'walk', travelTime: '10m', image:'images/博多聖誕市集-光之街.jpg' }
             ],
             [
-                { id: 201, name: '天神地下街', category: 'shopping', startTime: '10:00', address: '天神地下街', note: '九州最大地下街，150家店舖。', hours: '10:00-21:00', price: null, transportType: 'public', travelTime: '15m', image: images/天神地下街.jpg },
-                { id: 202, name: '百貨巡禮 (岩田屋/三越/大丸)', category: 'shopping', startTime: '~13:00', address: '岩田屋本店', note: '岩田屋(B2/3F/6F連通)、大丸(B2甜點:福砂屋/明月堂)。', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '5m', image: images/岩田屋.jpg },
-                { id: 203, name: '福岡PARCO', category: 'shopping', startTime: '~15:00', address: '福岡PARCO', note: '年輕潮牌、動畫周邊。', hours: '10:00-20:30', price: null, transportType: 'walk', travelTime: '5m', image: images/福岡PARCO.jpg },
-                { id: 204, name: 'Mina 天神', category: 'shopping', startTime: '~16:30', address: 'Mina 天神', note: '九州最大 UNIQLO、GU、LOFT。', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '10m', image: images/mina 天神.jpg },
-                { id: 205, name: '晚餐: Nikuichi (燒肉)', category: 'food', startTime: '17:30', address: 'Nikuichi (藥院或博多店)', note: '預約時間 17:30。必點7種盛合。', hours: '16:00-00:00', price: null, transportType: 'public', travelTime: '20m', image: images/Nikuichi.jpg },
-                { id: 206, name: '天神聖誕市集', category: 'sightseeing', startTime: '~20:00', address: '福岡市役所西側廣場', note: '續攤感受不同於博多的聖誕氣氛。', hours: null, price: null, transportType: 'walk', travelTime: '15m', image: images/天神聖誕市集.jpg }
+                { id: 201, name: '天神地下街', category: 'shopping', startTime: '10:00', address: '天神地下街', note: '九州最大地下街，150家店舖。', hours: '10:00-21:00', price: null, transportType: 'public', travelTime: '15m', image:'images/天神地下街.jpg' },
+                { id: 202, name: '百貨巡禮 (岩田屋/三越/大丸)', category: 'shopping', startTime: '~13:00', address: '岩田屋本店', note: '岩田屋(B2/3F/6F連通)、大丸(B2甜點:福砂屋/明月堂)。', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '5m', image:'images/岩田屋.jpg' },
+                { id: 203, name: '福岡PARCO', category: 'shopping', startTime: '~15:00', address: '福岡PARCO', note: '年輕潮牌、動畫周邊。', hours: '10:00-20:30', price: null, transportType: 'walk', travelTime: '5m', image:'images/福岡PARCO.jpg' },
+                { id: 204, name: 'Mina 天神', category: 'shopping', startTime: '~16:30', address: 'Mina 天神', note: '九州最大 UNIQLO、GU、LOFT。', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '10m', image:'images/mina 天神.jpg' },
+                { id: 205, name: '晚餐: Nikuichi (燒肉)', category: 'food', startTime: '17:30', address: 'Nikuichi (藥院或博多店)', note: '預約時間 17:30。必點7種盛合。', hours: '16:00-00:00', price: null, transportType: 'public', travelTime: '20m', image:'images/Nikuichi.jpg' },
+                { id: 206, name: '天神聖誕市集', category: 'sightseeing', startTime: '~20:00', address: '福岡市役所西側廣場', note: '續攤感受不同於博多的聖誕氣氛。', hours: null, price: null, transportType: 'walk', travelTime: '15m', image:'images/天神聖誕市集.jpg' }
             ],
             [
-                { id: 301, name: '前往太宰府', category: 'transport', startTime: '09:00', address: '太宰府站', note: '搭乘西鐵電車前往。', hours: null, price: null, transportType: 'public', travelTime: '40m', image: images/太宰府車站.jpg },
-                { id: 302, name: '寶滿宮 竈門神社', category: 'sightseeing', startTime: '~10:00', address: '寶滿宮 竈門神社', note: '太宰府站轉搭巴士「往內山」。求良緣、驅邪。', hours: '08:30-18:00', price: null, transportType: 'bus', travelTime: '10m', image: images/寶滿宮 竈門神社.jpg },
-                { id: 303, name: '天開稻荷神社', category: 'sightseeing', startTime: '~11:30', address: '天開稻荷神社', note: '九州最古老稻荷神社，有奧之院山洞。', hours: '06:30-18:30', price: null, transportType: 'walk', travelTime: '20m', image: images/天開稻荷神社.jpg },
-                { id: 304, name: '太宰府天滿宮 & 表參道', category: 'sightseeing', startTime: '~13:00', address: '太宰府天滿宮', note: '御神牛、太鼓橋、隈研吾星巴克、梅枝餅。午餐: 暖暮拉麵或一蘭(五角碗)。', hours: '06:30-19:00', price: null, transportType: 'walk', travelTime: '15m', image: images/太宰府天滿宮.jpg },
-                { id: 305, name: '前往 LaLaport 福岡', category: 'transport', startTime: '~16:00', address: 'LaLaport 福岡', note: '搭乘西鐵/巴士前往。', hours: null, price: null, transportType: 'public', travelTime: '50m', image: images/LaLaport 福岡.jpg },
+                { id: 301, name: '前往太宰府', category: 'transport', startTime: '09:00', address: '太宰府站', note: '搭乘西鐵電車前往。', hours: null, price: null, transportType: 'public', travelTime: '40m', image:'images/太宰府車站.jpg' },
+                { id: 302, name: '寶滿宮 竈門神社', category: 'sightseeing', startTime: '~10:00', address: '寶滿宮 竈門神社', note: '太宰府站轉搭巴士「往內山」。求良緣、驅邪。', hours: '08:30-18:00', price: null, transportType: 'bus', travelTime: '10m', image:'images/寶滿宮 竈門神社.jpg' },
+                { id: 303, name: '天開稻荷神社', category: 'sightseeing', startTime: '~11:30', address: '天開稻荷神社', note: '九州最古老稻荷神社，有奧之院山洞。', hours: '06:30-18:30', price: null, transportType: 'walk', travelTime: '20m', image:'images/天開稻荷神社.jpg' },
+                { id: 304, name: '太宰府天滿宮 & 表參道', category: 'sightseeing', startTime: '~13:00', address: '太宰府天滿宮', note: '御神牛、太鼓橋、隈研吾星巴克、梅枝餅。午餐: 暖暮拉麵或一蘭(五角碗)。', hours: '06:30-19:00', price: null, transportType: 'walk', travelTime: '15m', image:'images/太宰府天滿宮.jpg' },
+                { id: 305, name: '前往 LaLaport 福岡', category: 'transport', startTime: '~16:00', address: 'LaLaport 福岡', note: '搭乘西鐵/巴士前往。', hours: null, price: null, transportType: 'public', travelTime: '50m', image:'images/LaLaport 福岡.jpg' },
                 { id: 306, name: 'LaLaport 福岡 (鋼彈)', category: 'shopping', startTime: '~17:00', address: 'LaLaport 福岡', note: '看日本最大鋼彈立像(24.8m)。', hours: '10:00-21:00', price: null, transportType: 'walk', travelTime: '5m', image: null },
-                { id: 307, name: '晚餐: 博多華味鳥 (水炊鍋)', category: 'food', startTime: '18:15', address: '博多華味鳥 川端店', note: '預約時間 18:15 (10大2小)。', hours: '17:00-23:00', price: null, transportType: 'public', travelTime: '30m', image: images/博多華味鳥 川端店.jpg }
+                { id: 307, name: '晚餐: 博多華味鳥 (水炊鍋)', category: 'food', startTime: '18:15', address: '博多華味鳥 川端店', note: '預約時間 18:15 (10大2小)。', hours: '17:00-23:00', price: null, transportType: 'public', travelTime: '30m', image:'images/博多華味鳥 川端店.jpg' }
             ],
             [
-                { id: 401, name: '櫛田神社', category: 'sightseeing', startTime: '10:00', address: '櫛田神社', note: '博多總鎮守，展示山笠。', hours: '09:00-17:00', price: '免費', transportType: 'public', travelTime: '20m', image: images/櫛田神社.jpg },
-                { id: 402, name: '博多車站周邊購物', category: 'shopping', startTime: '~11:30', address: 'JR博多城', note: 'AMU PLAZA(Hands)、博多阪急、KITTE博多(0101)、Deitos(拉麵街)。', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '10m', image: images/JR博多城.jpg },
+                { id: 401, name: '櫛田神社', category: 'sightseeing', startTime: '10:00', address: '櫛田神社', note: '博多總鎮守，展示山笠。', hours: '09:00-17:00', price: '免費', transportType: 'public', travelTime: '20m', image:'images/櫛田神社.jpg' },
+                { id: 402, name: '博多車站周邊購物', category: 'shopping', startTime: '~11:30', address: 'JR博多城', note: 'AMU PLAZA(Hands)、博多阪急、KITTE博多(0101)、Deitos(拉麵街)。', hours: '10:00-20:00', price: null, transportType: 'walk', travelTime: '10m', image:'images/JR博多城.jpg' },
                 { id: 403, name: '午餐 (博多拉麵街)', category: 'food', startTime: '~13:00', address: '博多 Deitos 2F', note: '聚集12間九州拉麵名店。', hours: '11:00-22:00', price: null, transportType: 'walk', travelTime: '5m', image: null },
-                { id: 404, name: '福岡塔', category: 'sightseeing', startTime: '~16:30', address: '福岡塔', note: '日本最高海濱塔，冬季聖誕樹主題燈飾。', hours: '09:30-22:00', price: '¥1000', transportType: 'public', travelTime: '30m', image: images/福岡塔.jpg },
-                { id: 405, name: '福岡塔聖誕市集', category: 'sightseeing', startTime: '~18:30', address: '福岡塔前', note: '周邊區域市集活動。', hours: null, price: null, transportType: 'walk', travelTime: '5m', image: images/中央光之森林.jpg }
+                { id: 404, name: '福岡塔', category: 'sightseeing', startTime: '~16:30', address: '福岡塔', note: '日本最高海濱塔，冬季聖誕樹主題燈飾。', hours: '09:30-22:00', price: '¥1000', transportType: 'public', travelTime: '30m', image:'images/福岡塔.jpg' },
+                { id: 405, name: '福岡塔聖誕市集', category: 'sightseeing', startTime: '~18:30', address: '福岡塔前', note: '周邊區域市集活動。', hours: null, price: null, transportType: 'walk', travelTime: '5m', image:'images/中央光之森林.jpg' }
             ],
             [
                 { id: 501, name: 'Check-out', category: 'accommodation', startTime: '10:00', address: '飯店', note: '辦理退房，寄放行李或前往機場寄放。', hours: null, price: null, transportType: 'walk', travelTime: null, image: null },
-                { id: 502, name: '大濠公園 & 星巴克', category: 'sightseeing', startTime: '~11:00', address: '大濠公園', note: '都市綠洲，湖畔星巴克喝咖啡。', hours: null, price: null, transportType: 'public', travelTime: '20m', image: images/大濠公園.jpg },
-                { id: 503, name: '壹岐神社 (備案)', category: 'sightseeing', startTime: '~13:00', address: '壹岐神社', note: '海邊鳥居，散步聽海浪。', hours: null, price: null, transportType: 'public', travelTime: '30m', image: images/壹岐神社.jpg },
-                { id: 504, name: '前往福岡機場', category: 'transport', startTime: '~15:00', address: '福岡機場', note: '預備搭機返台。', hours: null, price: null, transportType: 'public', travelTime: '30m', image: images/福岡機場.jpg },
+                { id: 502, name: '大濠公園 & 星巴克', category: 'sightseeing', startTime: '~11:00', address: '大濠公園', note: '都市綠洲，湖畔星巴克喝咖啡。', hours: null, price: null, transportType: 'public', travelTime: '20m', image:'images/大濠公園.jpg' },
+                { id: 503, name: '壹岐神社 (備案)', category: 'sightseeing', startTime: '~13:00', address: '壹岐神社', note: '海邊鳥居，散步聽海浪。', hours: null, price: null, transportType: 'public', travelTime: '30m', image:'images/壹岐神社.jpg' },
+                { id: 504, name: '前往福岡機場', category: 'transport', startTime: '~15:00', address: '福岡機場', note: '預備搭機返台。', hours: null, price: null, transportType: 'public', travelTime: '30m', image:'images/福岡機場.jpg' },
                 { id: 505, name: '返程班機', category: 'flight', startTime: '待定', address: '福岡機場', note: '平安歸賦。', hours: null, price: null, transportType: 'flight', travelTime: null, image: null }
             ]
         ]);
@@ -1202,4 +1202,5 @@ createApp({
 </script>
 </body>
 </html>
+
 
