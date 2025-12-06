@@ -1969,8 +1969,8 @@ createApp({
         };
 
         // --- 自動存檔功能 (LocalStorage) ---
-        // 版本更新 v8
-        const STORAGE_KEY = 'fukuoka_trip_data_v8';
+        // 版本更新 v11
+        const STORAGE_KEY = 'fukuoka_trip_data_v11';
         const saveToStorage = () => {
             const dataToSave = {
                 tripSettings: tripSettings.value, 
@@ -2015,10 +2015,17 @@ createApp({
                 }
             }
         };
-        // --- 匯出功能 ---
+        // --- 匯出功能 (修正版) ---
         const generateExportCode = () => {
             // 產生 JSON stringify 的字串，並加上 const xxx = ref(...)
             let code = `// --- [資料區塊開始] ---\n`;
+            
+            // 1. 新增：匯出旅程設定 (標題)
+            code += `        const tripSettings = ref(${JSON.stringify(tripSettings.value, null, 4)});\n`;
+            
+            // 2. 新增：匯出日期設定 (天數增減)
+            code += `        const dates = ref(${JSON.stringify(dates.value, null, 4)});\n`;
+
             code += `        const hotelList = ref(${JSON.stringify(hotelList.value, null, 4)});\n`;
             code += `        const flightList = ref(${JSON.stringify(flightList.value, null, 4)});\n`;
             code += `        const itineraryData = ref(${JSON.stringify(itineraryData.value, null, 4)});\n`;
@@ -2030,6 +2037,10 @@ createApp({
             code += `        const shoppingList = ref(${JSON.stringify(shoppingList.value, null, 4)});\n\n`;
             code += `        const foodList = ref(${JSON.stringify(foodList.value, null, 4)});\n`;
             code += `        const expenses = ref(${JSON.stringify(expenses.value, null, 4)});\n`;
+            
+            // 3. 新增：匯出匯率設定
+            code += `        const exchangeRate = ref(${exchangeRate.value});\n`;
+            
             code += `        // --- [資料區塊結束] ---`;
             
             generatedCode.value = code;
@@ -2044,11 +2055,18 @@ createApp({
             }
         };
 
-        // 新增：連結轉換功能
+        // 新增：連結轉換功能 (修正版)
         const formatNoteWithLinks = (text) => {
             if (!text) return '';
-            let safeText = text.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">").replace(/"/g, """).replace(/'/g, "'");
+            // 修正 HTML Entity
+            let safeText = text.replace(/&/g, "&amp;")
+                               .replace(/</g, "&lt;")
+                               .replace(/>/g, "&gt;")
+                               .replace(/"/g, "&quot;")
+                               .replace(/'/g, "&#039;");
+            
             const urlRegex = /(https?:\/\/[^\s]+)/g;
+            // 修正 onclick 事件
             const withLinks = safeText.replace(urlRegex, '<a href="$1" target="_blank" class="text-blue-600 underline break-all" onclick="event.stopPropagation()">$1</a>');
             return withLinks.replace(/\n/g, '<br>');
         };
@@ -2080,6 +2098,3 @@ createApp({
 </script>
 </body>
 </html>
-}
-這版html沒有包含到方案B：新增「日本氣象廳」快速連結按鈕
-請補上，並一併檢查其他代碼有無錯誤
