@@ -94,7 +94,7 @@ body {
     color: #5D4037;
     text-shadow: 0 2px 15px rgba(255, 255, 255, 0.9), 0 0 5px rgba(255, 255, 255, 1);
     z-index: 20;
-    width: 80%; /* 避免蓋到右邊按鈕 */
+    width: 80%;
 }
 
 .app-main {
@@ -134,12 +134,7 @@ body {
 
 .fab-shadow { box-shadow: 0 4px 15px rgba(255, 213, 79, 0.5); }
 
-.note-content {
-    max-height: 2.5rem;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
-.note-content.expanded { max-height: 500px; }
+/* note-content 樣式已直接寫在 HTML class 中以支援動態高度 */
 
 .expense-category-tag {
     min-width: 50px;
@@ -176,7 +171,6 @@ body {
     padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* 分類標籤按鈕樣式 */
 .category-pill {
     padding: 6px 14px;
     border-radius: 999px;
@@ -295,11 +289,17 @@ body {
                                 <p class="text-slate-600 font-bold mb-1 flex items-center">
                                     <i class="fa-solid fa-highlighter text-accent-yellow mr-2"></i> 備註
                                 </p>
-                                <div class="note-content whitespace-pre-line" :class="{'expanded': item.isNoteExpanded}">
+                                
+                                <div class="whitespace-pre-line leading-relaxed text-slate-500 transition-all duration-300"
+                                     :class="item.isNoteExpanded ? 'max-h-60 overflow-y-auto custom-scrollbar p-1' : 'max-h-12 overflow-hidden'">
                                      {{ item.note }}
                                 </div>
-                                <button v-if="item.note.length > 50" @click="item.isNoteExpanded = !item.isNoteExpanded" class="text-deep-sea-blue font-bold mt-1 block">
-                                    {{ item.isNoteExpanded ? '收合備註' : '查看更多...' }}
+                                
+                                <button v-if="item.note.length > 30" 
+                                        @click.stop="item.isNoteExpanded = !item.isNoteExpanded" 
+                                        class="text-deep-sea-blue font-bold mt-2 w-full text-center py-1 rounded hover:bg-blue-50 transition-colors text-[10px]">
+                                    <i class="fa-solid" :class="item.isNoteExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                    {{ item.isNoteExpanded ? ' 收合備註' : ' 展開閱讀完整內容' }}
                                 </button>
                             </div>
                         </div>
@@ -1963,12 +1963,12 @@ createApp({
         };
 
         // --- 自動存檔功能 (LocalStorage) ---
-        // 版本更新 v6
-        const STORAGE_KEY = 'fukuoka_trip_data_v6';
+        // 版本更新 v7
+        const STORAGE_KEY = 'fukuoka_trip_data_v7';
         const saveToStorage = () => {
             const dataToSave = {
-                tripSettings: tripSettings.value, // 新增儲存設定
-                dates: dates.value,               // 新增儲存日期
+                tripSettings: tripSettings.value, 
+                dates: dates.value,               
                 itineraryData: itineraryData.value,
                 foodList: foodList.value,
                 shoppingList: shoppingList.value,
@@ -1993,8 +1993,8 @@ createApp({
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
-                    if(parsed.tripSettings) tripSettings.value = parsed.tripSettings; // 讀取設定
-                    if(parsed.dates) dates.value = parsed.dates; // 讀取日期
+                    if(parsed.tripSettings) tripSettings.value = parsed.tripSettings;
+                    if(parsed.dates) dates.value = parsed.dates;
                     if(parsed.itineraryData) itineraryData.value = parsed.itineraryData;
                     if(parsed.foodList) foodList.value = parsed.foodList;
                     if(parsed.shoppingList) shoppingList.value = parsed.shoppingList;
