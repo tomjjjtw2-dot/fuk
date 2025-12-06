@@ -981,12 +981,13 @@ createApp({
             "category": "shopping",
             "startTime": "12:00",
             "address": "博多運河城",
-            "note": "水舞秀(每30分)、3F MUJI、2F迪士尼商店、B1動漫IP/扭蛋(萬代)。",
+            "note": "水舞秀(每30分)、3F MUJI、2F迪士尼商店\n、B1動漫IP/扭蛋(萬代)。\n官網：https://canalcity.co.jp/zh-tw",
             "hours": "10:00-21:00",
             "price": null,
             "transportType": "walk",
             "travelTime": "12m",
-            "image": "images/fu-4.jpg"
+            "image": "images/fu-4.jpg",
+            "isNoteExpanded": true
         },
         {
             "id": 105,
@@ -998,7 +999,7 @@ createApp({
             "hours": "12:00-23:00",
             "price": null,
             "transportType": "walk",
-            "travelTime": "13m",
+            "travelTime": "20m",
             "image": "images/fu-21.jpg"
         }
     ],
@@ -1009,7 +1010,7 @@ createApp({
             "category": "shopping",
             "startTime": "10:00",
             "address": "天神地下街",
-            "note": "九州最大地下街，150家店舖。",
+            "note": "九州最大地下街，150家店舖。\n官網：https://www.tenchika.com/",
             "hours": "10:00-21:00",
             "price": null,
             "transportType": "public",
@@ -1022,12 +1023,13 @@ createApp({
             "category": "shopping",
             "startTime": "13:00",
             "address": "岩田屋本店",
-            "note": "岩田屋(B2/3F/6F連通)\n大丸(B2甜點:福砂屋/明月堂/如水庵)。",
+            "note": "岩田屋(B2/3F/6F連通)\n大丸(B2甜點:福砂屋/明月堂/如水庵)。\n岩田屋：https://www.iwataya-mitsukoshi.mistore.jp.t.kq.hp.transer.com/iwataya.html\n福岡三越：https://www.iwataya-mitsukoshi.mistore.jp.t.kq.hp.transer.com/mitsukoshi/shops.html\n大丸天神：https://www.daimaru-fukuoka.jp.t.md.hp.transer.com/\n",
             "hours": "10:00-20:00",
             "price": null,
             "transportType": "walk",
             "travelTime": "5m",
-            "image": "images/fu-7.jpg"
+            "image": "images/fu-7.jpg",
+            "isNoteExpanded": true
         },
         {
             "id": 203,
@@ -1035,7 +1037,7 @@ createApp({
             "category": "shopping",
             "startTime": "15:00",
             "address": "福岡PARCO",
-            "note": "年輕潮牌、動畫周邊與生活風格選物集中地。",
+            "note": "年輕潮牌、動畫周邊與生活風格選物集中地。\n官網：https://tw.fukuoka.parco.jp/",
             "hours": "10:00-20:30",
             "price": null,
             "transportType": "walk",
@@ -1048,7 +1050,7 @@ createApp({
             "category": "shopping",
             "startTime": "16:30",
             "address": "Mina 天神",
-            "note": "九州最大 UNIQLO、GU、LOFT。",
+            "note": "九州最大 UNIQLO、GU、LOFT。\n官網：https://www.mina-tenjin.com/index.php#googtrans(jp|zh-TW)",
             "hours": "10:00-20:00",
             "price": null,
             "transportType": "walk",
@@ -1168,7 +1170,7 @@ createApp({
             "category": "sightseeing",
             "startTime": "20:00",
             "hours": "12:00~23:00",
-            "address": "天神聖誕市集",
+            "address": "福岡市政府西側交流廣場",
             "price": "",
             "note": "穿過拱門，映入眼簾的是一個沐浴在光芒中的世界",
             "transportType": "walk",
@@ -1202,7 +1204,8 @@ createApp({
             "price": null,
             "transportType": "public",
             "travelTime": "10m",
-            "image": "images/fu-19.jpg"
+            "image": "images/fu-19.jpg",
+            "isNoteExpanded": false
         },
         {
             "id": 404,
@@ -1514,6 +1517,7 @@ createApp({
         "note": "奥地利提洛邦傳統餅乾捲，以新鮮牛乳和奶油製成，厚實超香脆，口味有抹茶、草莓、香草、咖啡四種。\n參考價格：捲心酥1罐1,800日幣"
     }
 ]);
+
         const foodList = ref([
     {
         "name": "Dacomecca",
@@ -1747,7 +1751,7 @@ createApp({
         const newExpense = ref({ name: '', amount: null, category: 'food', date: new Date().toISOString().substring(0, 10), payment: 'cash' });
         const currencyInput = ref(10000);
         const currencyResult = ref(0);
-        const exchangeRate = ref(0.215); 
+        const exchangeRate = ref(0.205); 
 
         const currentItinerary = computed(() => {
             if (!itineraryData.value[selectedDateIndex.value]) itineraryData.value[selectedDateIndex.value] = [];
@@ -2072,3 +2076,4 @@ createApp({
 </script>
 </body>
 </html>
+
