@@ -103,23 +103,12 @@ body {
 }
 
 .hide-scrollbar::-webkit-scrollbar { display: none; }
-.hide-scrollbar { -ms-overflow-style: none;
-    scrollbar-width: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-.custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: #f1f1f1; 
-    border-radius: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1; 
-    border-radius: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 .card-shadow {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
@@ -128,13 +117,11 @@ body {
 
 .animate-fade-in { animation: fadeIn 0.4s ease-out; }
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px);
-}
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-.fab-shadow { box-shadow: 0 4px 15px rgba(255, 213, 79, 0.5);
-}
+.fab-shadow { box-shadow: 0 4px 15px rgba(255, 213, 79, 0.5); }
 
 .expense-category-tag {
     min-width: 50px;
@@ -190,11 +177,26 @@ body {
     color: #64748b;
     border-color: #e2e8f0;
 }
+
+/* Toast Notification Animation */
+.toast-enter-active, .toast-leave-active { transition: all 0.3s ease; }
+.toast-enter-from, .toast-leave-to { opacity: 0; transform: translateY(20px); }
 </style>
 </head>
 <body>
 
 <div id="app" class="app-container">
+
+    <transition name="toast">
+        <div v-if="toast.show" class="fixed top-24 left-1/2 -translate-x-1/2 bg-slate-800/90 backdrop-blur text-white px-5 py-2.5 rounded-full text-sm font-bold z-[100] shadow-lg flex items-center shadow-slate-500/20 border border-white/10">
+            <i class="fa-solid fa-check-circle text-green-400 mr-2"></i> {{ toast.message }}
+        </div>
+    </transition>
+
+    <button @click="scrollToTop" v-show="showBackToTop" 
+            class="fixed bottom-[90px] right-5 z-40 w-10 h-10 bg-white/90 backdrop-blur text-deep-sea-blue rounded-full shadow-lg border border-slate-100 flex items-center justify-center transition-all hover:bg-deep-sea-blue hover:text-white hover:-translate-y-1">
+        <i class="fa-solid fa-arrow-up text-sm"></i>
+    </button>
 
     <div class="header-bg relative">
         <div class="header-image-container">
@@ -240,7 +242,10 @@ body {
                 </div>
             </div>
 
-            <div v-if="weatherData[selectedDateIndex]" class="mb-4 bg-snow-white border border-ice-blue rounded-2xl p-4 flex justify-between items-center shadow-md">
+            <div v-if="weatherData[selectedDateIndex]" @click="openWeatherModal" class="mb-4 bg-snow-white border border-ice-blue rounded-2xl p-4 flex justify-between items-center shadow-md cursor-pointer hover:shadow-lg transition-shadow group relative">
+                <div class="absolute top-2 right-2 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-pencil text-xs"></i>
+                </div>
                 <div class="flex items-start text-deep-sea-blue space-x-4">
                     <i :class="getWeatherIcon(weatherData[selectedDateIndex].condition)" class="text-5xl text-blue-500"></i>
                     <div class="pt-1">
@@ -252,9 +257,9 @@ body {
                 <div class="text-right text-xs text-slate-600 pl-3 flex flex-col items-end">
                     <span class="font-bold block text-slate-700">{{ getWeatherDescription(weatherData[selectedDateIndex].condition) }}</span>
                     <span class="mt-1 block text-slate-400 mb-1">大眾運輸為主</span>
-                    <a href="https://tenki.jp/forecast/9/43/8210/40130/" target="_blank" class="flex items-center bg-white border border-deep-sea-blue text-deep-sea-blue px-3 py-1 rounded-full hover:bg-deep-sea-blue hover:text-white transition-all shadow-sm">
+                    <a href="https://tenki.jp/forecast/9/43/8210/40130/" @click.stop target="_blank" class="flex items-center bg-white border border-deep-sea-blue text-deep-sea-blue px-3 py-1 rounded-full hover:bg-deep-sea-blue hover:text-white transition-all shadow-sm">
                         <i class="fa-solid fa-cloud-sun mr-1"></i> 
-                        <span class="font-bold">Tenki.jp 真實天氣</span>
+                        <span class="font-bold">Tenki.jp</span>
                     </a>
                 </div>
             </div>
@@ -263,7 +268,7 @@ body {
                 <div v-for="(item, idx) in currentItinerary" :key="item.id" class="relative group">
                     <div v-if="idx > 0" class="pl-8 pb-2 flex items-center text-xs text-slate-400">
                         <div class="h-6 w-0.5 bg-slate-200 absolute left-6 -top-3"></div>
-                           <i :class="getTransportIcon(currentItinerary[idx].transportType)" class="mr-2 text-slate-300 cursor-pointer hover:text-deep-sea-blue transition-colors"
+                        <i :class="getTransportIcon(currentItinerary[idx].transportType)" class="mr-2 text-slate-300 cursor-pointer hover:text-deep-sea-blue transition-colors"
                            @click="openMapDirections(currentItinerary[idx - 1], item)">
                         </i>
                         <span class="font-bold">{{ item.travelTime || '移動中' }}</span>
@@ -280,24 +285,29 @@ body {
                             <span v-if="item.startTime" class="text-xs font-bold text-slate-600 mt-1">{{ item.startTime }}</span>
                         </div>
 
-                        <div class="flex-1 pb-1">
-                            <h3 class="text-lg font-bold text-slate-800 mb-1 leading-tight pr-8">{{ item.name }}</h3>
-                             <div class="text-sm text-slate-500 space-y-1.5 mt-2">
+                        <div class="flex-1 pb-1 pr-6">
+                            <h3 class="text-lg font-bold text-slate-800 mb-1 leading-tight">{{ item.name }}</h3>
+                            <div class="text-sm text-slate-500 space-y-1.5 mt-2">
                                 <p v-if="item.hours" class="flex items-center"><i class="fa-regular fa-clock w-4 text-center mr-2 text-ice-blue"></i> {{ item.hours }}</p>
                                 <p v-if="item.price" class="flex items-center"><i class="fa-solid fa-ticket w-4 text-center mr-2 text-ice-blue"></i> {{ item.price }}</p>
-                                <p v-if="item.address" class="flex items-start"><i class="fa-solid fa-location-dot w-4 text-center mr-2 mt-1 text-ice-blue"></i> {{ item.address }}</p>
+                                
+                                <p v-if="item.address" class="flex items-start group/addr">
+                                    <i class="fa-solid fa-location-dot w-4 text-center mr-2 mt-1 text-ice-blue flex-shrink-0"></i> 
+                                    <span class="flex-1 mr-1">{{ item.address }}</span>
+                                    <button @click.stop="copyToClipboard(item.address)" class="text-slate-300 hover:text-deep-sea-blue active:scale-95 transition-colors p-0.5">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </p>
                             </div>
 
                             <div v-if="item.note && item.note.length > 0" class="mt-3 text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                                 <p class="text-slate-600 font-bold mb-1 flex items-center">
                                     <i class="fa-solid fa-highlighter text-accent-yellow mr-2"></i> 備註
                                 </p>
-                                
                                 <div class="whitespace-pre-line leading-relaxed text-slate-500 transition-all duration-300"
                                      :class="item.isNoteExpanded ? 'max-h-60 overflow-y-auto custom-scrollbar p-1' : 'max-h-12 overflow-hidden'"
                                      v-html="formatNoteWithLinks(item.note)">
                                 </div>
-                                
                                 <button v-if="item.note.length > 30" 
                                         @click.stop="item.isNoteExpanded = !item.isNoteExpanded" 
                                         class="text-deep-sea-blue font-bold mt-2 w-full text-center py-1 rounded hover:bg-blue-50 transition-colors text-[10px]">
@@ -381,7 +391,7 @@ body {
                  </h3>
                 <textarea v-model="memoText" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue mb-3 min-h-[100px]" placeholder="輸入備忘事項或網址... (網址將自動轉換為按鈕)"></textarea>
                 
-                 <div v-if="parsedLinks.length > 0" class="flex flex-wrap gap-2 mt-2">
+                <div v-if="parsedLinks.length > 0" class="flex flex-wrap gap-2 mt-2">
                     <a v-for="(link, lIdx) in parsedLinks" :key="lIdx" :href="link" target="_blank" class="bg-ice-blue text-deep-sea-blue px-3 py-2 rounded-lg text-xs font-bold flex items-center hover:bg-deep-sea-blue hover:text-white transition-colors">
                         <i class="fa-solid fa-link mr-2"></i> 開啟連結 {{ lIdx + 1 }}
                     </a>
@@ -395,13 +405,13 @@ body {
                 </div>
                 
                 <div class="space-y-4">
-                     <div v-for="(flight, idx) in flightList" :key="idx" class="bg-blue-50 rounded-xl p-3 border border-blue-100 relative group">
+                    <div v-for="(flight, idx) in flightList" :key="idx" class="bg-blue-50 rounded-xl p-3 border border-blue-100 relative group">
                         <button @click="removeFlight(idx)" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 z-10 p-1"><i class="fa-solid fa-xmark"></i></button>
                         <div @click="editInfoItem('flight', flight, idx)" class="cursor-pointer">
                             <div class="flex justify-between text-sm font-bold text-deep-sea-blue mb-1 pr-6">
                                  <span>{{ flight.origin }}</span>
                                 <i class="fa-solid fa-plane text-xs"></i>
-                                  <span>{{ flight.dest }}</span>
+                                <span>{{ flight.dest }}</span>
                              </div>
                             <div class="flex justify-between text-xs text-slate-500">
                                 <span>{{ flight.depTime }}</span>
@@ -426,7 +436,7 @@ body {
                     <li v-for="(hotel, idx) in hotelList" :key="idx" class="border-b last:border-0 pb-4 last:pb-0 relative">
                         <button @click="removeHotel(idx)" class="absolute top-0 right-0 text-slate-300 hover:text-red-500 z-10 p-1"><i class="fa-solid fa-xmark"></i></button>
                         
-                    <div class="flex justify-between items-start group cursor-pointer" @click="editInfoItem('hotel', hotel, idx)">
+                        <div class="flex justify-between items-start group cursor-pointer" @click="editInfoItem('hotel', hotel, idx)">
                             <div class="flex-1 pr-6">
                                  <span class="font-bold block text-slate-700 text-lg">{{ hotel.name }}</span>
                                  <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full inline-block mt-1">{{ hotel.date }}</span>
@@ -435,7 +445,10 @@ body {
                         
                         <div class="flex items-center mt-2" v-if="hotel.address">
                             <button @click.stop="openMap(hotel.name)" class="w-6 h-6 mr-2 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center hover:bg-indigo-500 hover:text-white transition-all flex-shrink-0"><i class="fa-solid fa-location-arrow text-[10px]"></i></button>
-                             <p class="text-sm text-slate-500 flex items-start">{{ hotel.address }}</p>
+                            <p class="text-sm text-slate-500 flex items-start flex-1 mr-2">{{ hotel.address }}</p>
+                            <button @click.stop="copyToClipboard(hotel.address)" class="text-slate-300 hover:text-deep-sea-blue active:scale-95 transition-colors p-1">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
                         </div>
                          <div class="text-sm text-slate-500 mt-1 pl-8" v-if="hotel.phone">
                               <p><i class="fa-solid fa-phone w-4 text-center mr-1 text-slate-300"></i> {{ hotel.phone }}</p>
@@ -468,7 +481,7 @@ body {
                         <a href="tel:+886800085095" class="flex items-center justify-between text-red-600 font-bold text-sm">
                              <span><i class="fa-solid fa-globe mr-2"></i>全球專線 +886-800-085-095</span>
                             <i class="fa-solid fa-phone"></i>
-                         </a>
+                        </a>
                     </div>
                 </div>
 
@@ -477,7 +490,7 @@ body {
                         <i class="fa-solid fa-user-shield mr-1"></i> 日本警察 110
                      </a>
                      <a href="tel:119" class="bg-white py-3 rounded-xl shadow-sm text-red-600 font-bold block border border-red-100 hover:bg-red-600 hover:text-white transition-all">
-                         <i class="fa-solid fa-truck-medical mr-1"></i> 日本救護 119
+                        <i class="fa-solid fa-truck-medical mr-1"></i> 日本救護 119
                     </a>
                 </div>
             </div>
@@ -495,7 +508,7 @@ body {
         </div>
 
         <div v-if="currentTab === 'food'" class="animate-fade-in">
-             <div class="sticky top-0 bg-[#FFF8E7] z-10 pb-2 pt-1">
+            <div class="sticky top-0 bg-[#FFF8E7] z-10 pb-2 pt-1">
                 <div class="relative mb-2">
                     <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
                     <input v-model="foodSearchQuery" type="text" placeholder="搜尋美食 (例如: 拉麵, 布丁...)" class="w-full bg-white rounded-xl py-3 pl-10 pr-4 shadow-sm text-sm focus:ring-2 focus:ring-deep-sea-blue outline-none border border-slate-100">
@@ -513,7 +526,7 @@ body {
             </div>
 
              <div class="grid grid-cols-2 gap-4 mt-2">
-                 <div v-for="(item, idx) in filteredFoodList" :key="item.originalIndex" 
+                <div v-for="(item, idx) in filteredFoodList" :key="item.originalIndex" 
                      class="bg-white rounded-2xl p-3 card-shadow relative group cursor-pointer hover:shadow-lg transition-all"
                      @click="openMap(item.address || item.name)"> 
                     <div class="aspect-square bg-slate-50 rounded-xl mb-3 overflow-hidden relative border border-slate-100">
@@ -535,9 +548,15 @@ body {
                         </button>
                     </div>
                     <p class="font-bold text-sm text-slate-800 truncate px-1">{{ item.name }}</p>
-                    <p class="text-[10px] text-slate-400 px-1 mt-0.5 truncate" v-if="item.address"><i class="fa-solid fa-map-pin mr-1"></i>{{ item.address }}</p>
+                    <p class="text-[10px] text-slate-400 px-1 mt-0.5 truncate flex items-center" v-if="item.address">
+                        <i class="fa-solid fa-map-pin mr-1 flex-shrink-0"></i>
+                        <span class="truncate flex-1">{{ item.address }}</span>
+                        <button @click.stop="copyToClipboard(item.address)" class="ml-1 text-slate-300 hover:text-deep-sea-blue active:scale-95 transition-colors p-1">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </p>
                     <p class="text-[10px] text-slate-500 px-1 mt-1 line-clamp-2 h-8" v-if="item.note">{{ item.note }}</p>
-                 </div>
+                </div>
                 <div v-if="foodList.length === 0" class="col-span-2 text-center py-16 text-slate-300">
                     <i class="fa-solid fa-utensils text-5xl mb-3 text-slate-200"></i>
                     <p class="text-sm">美食清單空白<br>請點擊下方新增</p>
@@ -680,6 +699,41 @@ body {
         </div>
     </div>
 
+    <div v-if="showWeatherModal" @click.self="showWeatherModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+            <h3 class="font-bold text-lg mb-5 text-center text-slate-800">編輯當日天氣</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-400 ml-1">天氣狀況</label>
+                    <select v-model="tempWeather.condition" class="w-full bg-slate-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-deep-sea-blue">
+                        <option value="sunny">晴朗</option>
+                        <option value="cloudy">多雲</option>
+                        <option value="rain">降雨</option>
+                        <option value="snow">降雪</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-400 ml-1">最高溫</label>
+                        <input v-model="tempWeather.high" type="number" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 ml-1">最低溫</label>
+                        <input v-model="tempWeather.low" type="number" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 ml-1">降雨機率 (%)</label>
+                    <input v-model="tempWeather.chance" type="number" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-deep-sea-blue text-sm">
+                </div>
+            </div>
+            <div class="flex space-x-3 mt-6">
+                <button @click="showWeatherModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button>
+                <button @click="saveWeather" class="flex-1 py-3 rounded-xl bg-deep-sea-blue text-white font-bold text-sm shadow-lg shadow-deep-sea-blue/30">儲存</button>
+            </div>
+        </div>
+    </div>
+
     <div v-if="showInfoModal" @click.self="showInfoModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">
@@ -744,6 +798,7 @@ body {
                    <img v-else :src="newShoppingItem.image" class="h-full w-full object-contain rounded-xl">
                  </label>
             </div>
+        
             <div class="flex space-x-3">
                 <button @click="showShoppingModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button>
                 <button @click="saveShoppingItem" class="flex-1 py-3 rounded-xl bg-deep-sea-blue text-white font-bold text-sm shadow-lg shadow-deep-sea-blue/30">{{ isEditMode ? '儲存' : '新增' }}</button>
@@ -763,6 +818,7 @@ body {
                 </select>
 
                 <input v-model="newFoodItem.address" type="text" placeholder="地址 (Google Map 搜尋用)" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
+                
                 <input v-model="newFoodItem.image" type="text" placeholder="貼上圖片網址 (https://...)" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
                 
                 <textarea v-model="newFoodItem.note" placeholder="備註 (例如: 必吃餐點、營業時間)" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm h-24"></textarea>
@@ -852,10 +908,10 @@ body {
                         <label class="text-xs text-slate-400 ml-1">交通方式</label>
                         <select v-model="newItinerary.transportType" class="bg-slate-50 rounded-xl p-3 text-sm outline-none w-full">
                             <option value="walk">步行</option>
-                            <option value="car">自駕</option>
+                             <option value="car">自駕</option>
                             <option value="bus">巴士</option>
                             <option value="public">地鐵/JR</option>
-                            <option value="flight">飛機</option>
+                             <option value="flight">飛機</option>
                             <option value="other">其他</option>
                        </select>
                     </div>
@@ -864,7 +920,7 @@ body {
                     <input v-model="newItinerary.travelTime" type="text" placeholder="車程/移動時間" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
                     <input v-model="newItinerary.hours" type="text" placeholder="營業時間" class="bg-slate-50 rounded-xl p-3 text-sm outline-none">
                   </div>
-                <input v-model="newItinerary.price" type="text" placeholder="門票/費用" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue">
+                 <input v-model="newItinerary.price" type="text" placeholder="門票/費用" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue">
                 <textarea v-model="newItinerary.note" placeholder="備註/細節" rows="3" class="w-full bg-slate-50 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-deep-sea-blue"></textarea>
             </div>
             <div class="flex space-x-3 mt-6">
@@ -884,7 +940,7 @@ const { createApp, ref, computed, onMounted, watch } = Vue
 
 createApp({
     setup() {
-        const EXCHANGE_RATE = 0.22;
+        const EXCHANGE_RATE = 0.205;
         const CATEGORY_MAP = {
             sightseeing: { color: 'bg-green-500', icon: 'fa-solid fa-camera' },
             food: { color: 'bg-red-500', icon: 'fa-solid fa-utensils' },
@@ -901,7 +957,7 @@ createApp({
         };
         const currentTab = ref('itinerary');
         
-        // 新增：旅程設定 (標題、副標題)
+        // 旅程設定
         const tripSettings = ref({
             title: 'Fukuoka',
             subtitle: '12/13 - 12/17 聖誕市集之旅'
@@ -915,461 +971,461 @@ createApp({
             { date: '12/16', weekday: '二', hasCar: false },
             { date: '12/17', weekday: '三', hasCar: false }
         ]);
-        // --- [資料區塊開始] --- (從這裡開始替換)
-        const hotelList = ref([
-    {
-        "name": "HOTEL WA HAKATA",
-        "date": "12/13 - 12/17",
-        "address": "7-3 Tenyamachi, Hakata Ward, Fukuoka, 812-0025日本",
-        "phone": "+81 92-409-4892"
-    }
-]);
-        const flightList = ref([
-    {
-        "origin": "TPE 桃園",
-        "dest": "FUK 福岡",
-        "depTime": "06:45",
-        "arrTime": "10:00",
-        "code": "IT240"
-    },
-    {
-        "origin": "FUK 福岡",
-        "dest": "TPE 桃園",
-        "code": "JX841",
-        "depTime": "19:10",
-        "arrTime": "20:50"
-    }
-]);
-        const itineraryData = ref([
-    [
-        {
-            "id": 101,
-            "name": "桃園機場報到",
-            "category": "flight",
-            "startTime": "04:45",
-            "address": "桃園國際機場 T1",
-            "note": "Tigerair IT240 06:45起飛",
-            "hours": null,
-            "price": null,
-            "transportType": "flight",
-            "travelTime": null,
-            "image": "images/fu-1.jpg"
-        },
-        {
-            "id": 102,
-            "name": "福岡機場 (FUK) 抵達",
-            "category": "flight",
-            "startTime": "10:00",
-            "address": "福岡機場",
-            "note": "入境審查、領取行李",
-            "hours": null,
-            "price": null,
-            "transportType": "flight",
-            "travelTime": "2h15m",
-            "image": "images/fu-2.jpg"
-        },
-        {
-            "id": 103,
-            "name": "前往飯店 Check-in/寄放行李",
-            "category": "accommodation",
-            "startTime": "11:00",
-            "address": "HOTEL WA HAKATA",
-            "note": "先安置行李",
-            "hours": null,
-            "price": null,
-            "transportType": "other",
-            "travelTime": "20m",
-            "image": "images/fu-3.jpg"
-        },
         
-        {
-            "id": 104,
-            "name": "博多運河城",
-            "category": "shopping",
-            "startTime": "12:00",
-            "address": "博多運河城",
-            "note": "水舞秀(每30分)、3F MUJI、2F迪士尼商店\n、B1動漫IP/扭蛋(萬代)。\n官網：https://canalcity.co.jp/zh-tw",
-            "hours": "10:00-21:00",
-            "price": null,
-            "transportType": "walk",
-            "travelTime": "12m",
-            "image": "images/fu-4.jpg",
-            "isNoteExpanded": true
-        },
-        {
-            "id": 105,
-            "name": "中央光之森林",
-            "category": "sightseeing",
-            "startTime": "19:00",
-            "address": "天神中央公園",
-            "note": "透過眾多裝飾、燈光璀璨營造出夢幻般的氛圍",
-            "hours": "12:00-23:00",
-            "price": null,
-            "transportType": "walk",
-            "travelTime": "20m",
-            "image": "images/fu-21.jpg"
-        }
-    ],
-    [
-        {
-            "id": 201,
-            "name": "天神地下街",
-            "category": "shopping",
-            "startTime": "10:00",
-            "address": "天神地下街",
-            "note": "九州最大地下街，150家店舖。\n官網：https://www.tenchika.com/",
-            "hours": "10:00-21:00",
-            "price": null,
-            "transportType": "public",
-            "travelTime": "15m",
-            "image": "images/fu-6.jpg"
-        },
-        {
-            "id": 202,
-            "name": "百貨巡禮 (岩田屋/三越/大丸)",
-            "category": "shopping",
-            "startTime": "13:00",
-            "address": "岩田屋本店",
-            "note": "岩田屋(B2/3F/6F連通)\n大丸(B2甜點:福砂屋/明月堂/如水庵)。\n岩田屋：https://www.iwataya-mitsukoshi.mistore.jp.t.kq.hp.transer.com/iwataya.html\n福岡三越：https://www.iwataya-mitsukoshi.mistore.jp.t.kq.hp.transer.com/mitsukoshi/shops.html\n大丸天神：https://www.daimaru-fukuoka.jp.t.md.hp.transer.com/\n",
-            "hours": "10:00-20:00",
-            "price": null,
-            "transportType": "walk",
-            "travelTime": "5m",
-            "image": "images/fu-7.jpg",
-            "isNoteExpanded": true
-        },
-        {
-            "id": 203,
-            "name": "福岡PARCO",
-            "category": "shopping",
-            "startTime": "15:00",
-            "address": "福岡PARCO",
-            "note": "年輕潮牌、動畫周邊與生活風格選物集中地。\n官網：https://tw.fukuoka.parco.jp/",
-            "hours": "10:00-20:30",
-            "price": null,
-            "transportType": "walk",
-            "travelTime": "5m",
-            "image": "images/fu-8.jpg"
-        },
-        {
-            "id": 204,
-            "name": "Mina 天神",
-            "category": "shopping",
-            "startTime": "16:30",
-            "address": "Mina 天神",
-            "note": "九州最大 UNIQLO、GU、LOFT。\n官網：https://www.mina-tenjin.com/index.php#googtrans(jp|zh-TW)",
-            "hours": "10:00-20:00",
-            "price": null,
-            "transportType": "walk",
-            "travelTime": "5m",
-            "image": "images/fu-9.jpg"
-        },
-        {
-            "id": 205,
-            "name": "晚餐: Nikuichi (燒肉)",
-            "category": "food",
-            "startTime": "17:30",
-            "address": "にく屋 肉いち",
-            "note": "預約時間 17:30。必點7種盛合。",
-            "hours": "16:00-00:00",
-            "price": null,
-            "transportType": "public",
-            "travelTime": "20m",
-            "image": "images/fu-10.jpg"
-        },
-        {
-            "id": 206,
-            "name": "博多聖誕市集-光之街",
-            "category": "sightseeing",
-            "startTime": "19:00",
-            "address": "JR博多站前廣場",
-            "note": "續攤感受不同於博多的聖誕氣氛。",
-            "hours": "12:00~23:00",
-            "price": null,
-            "transportType": "walk",
-            "travelTime": "15m",
-            "image": "images/fu-5.jpg"
-        }
-    ],
-    [
-        {
-            "id": 301,
-            "name": "前往太宰府",
-            "category": "transport",
-            "startTime": "10:00",
-            "address": "太宰府站",
-            "note": "搭乘西鐵電車前往(9點出門)。",
-            "hours": null,
-            "price": null,
-            "transportType": "public",
-            "travelTime": "40m",
-            "image": "images/fu-12.jpg"
-        },
-        {
-            "id": 302,
-            "name": "寶滿宮 竈門神社",
-            "category": "sightseeing",
-            "startTime": "10:40",
-            "address": "寶滿宮 竈門神社",
-            "note": "太宰府站轉搭巴士「往內山」。求良緣、驅邪。             \n西鐵太宰府站左邊斜對面(福岡銀行)搭乘\n(一小時2班，25分與55分)",
-            "hours": "08:30-18:00",
-            "price": null,
-            "transportType": "bus",
-            "travelTime": "10m",
-            "image": "images/fu-13.jpg",
-            "isNoteExpanded": true
-        },
-        {
-            "id": 303,
-            "name": "天開稻荷神社",
-            "category": "sightseeing",
-            "startTime": "11:30",
-            "address": "天開稻荷神社",
-            "note": "九州最古老稻荷神社，有奧之院山洞。",
-            "hours": "06:30-18:30",
-            "price": null,
-            "transportType": "walk",
-            "travelTime": "30m",
-            "image": "images/fu-14.jpg"
-        },
-        {
-            "id": 304,
-            "name": "太宰府天滿宮 & 表參道",
-            "category": "sightseeing",
-            "startTime": "13:00",
-            "address": "太宰府天滿宮",
-            "note": "御神牛、太鼓橋、隈研吾星巴克、梅枝餅。午餐: 暖暮拉麵或一蘭(五角碗)。",
-            "hours": "06:30-19:00",
-            "price": null,
-            "transportType": "walk",
-            "travelTime": "10m",
-            "image": "images/fu-15.jpg"
-        },
-        {
-            "id": 305,
-            "name": "前往 LaLaport 福岡",
-            "category": "transport",
-            "startTime": "15:00",
-            "address": "LaLaport 福岡",
-            "note": "搭乘西鐵/巴士前往。",
-            "hours": null,
-            "price": null,
-            "transportType": "public",
-            "travelTime": "50m",
-            "image": "images/fu-16.jpg"
-        },
-        {
-            "id": 307,
-            "name": "晚餐: 博多華味鳥 (水炊鍋)",
-            "category": "food",
-            "startTime": "18:15",
-            "address": "水たき料亭 博多華味鳥 川端通り店",
-            "note": "預約時間 18:15 (10大2小)。",
-            "hours": "17:00-23:00",
-            "price": null,
-            "transportType": "public",
-            "travelTime": "40m",
-            "image": "images/fu-17.jpg"
-        },
-        {
-            "id": 1764922841025,
-            "name": "天神聖誕市集",
-            "category": "sightseeing",
-            "startTime": "20:00",
-            "hours": "12:00~23:00",
-            "address": "福岡市政府西側交流廣場",
-            "price": "",
-            "note": "穿過拱門，映入眼簾的是一個沐浴在光芒中的世界",
-            "transportType": "walk",
-            "travelTime": "15m",
-            "isNoteExpanded": false,
-            "image": "images/fu-11.jpg"
-        }
-    ],
-    [
-        {
-            "id": 401,
-            "name": "櫛田神社",
-            "category": "sightseeing",
-            "startTime": "10:00",
-            "address": "櫛田神社",
-            "note": "博多總鎮守，展示山笠。",
-            "hours": "09:00-17:00",
-            "price": "免費",
-            "transportType": "public",
-            "travelTime": "20m",
-            "image": "images/fu-18.jpg"
-        },
-        {
-            "id": 402,
-            "name": "博多車站周邊購物",
-            "category": "shopping",
-            "startTime": "~11:30",
-            "address": "JR博多城",
-            "note": "AMU PLAZA(Hands)、博多阪急、KITTE博多、Deitos(拉麵街)。",
-            "hours": "10:00-20:00",
-            "price": null,
-            "transportType": "public",
-            "travelTime": "10m",
-            "image": "images/fu-19.jpg",
-            "isNoteExpanded": false
-        },
-        {
-            "id": 404,
-            "name": "福岡塔",
-            "category": "sightseeing",
-            "startTime": "16:30",
-            "address": "福岡塔",
-            "note": "日本最高海濱塔，冬季聖誕樹主題燈飾。",
-            "hours": "09:30-22:00",
-            "price": "¥1000",
-            "transportType": "public",
-            "travelTime": "40m",
-            "image": "images/fu-20.jpg"
-        },
-        {
-            "id": 405,
-            "name": "天神屋台",
-            "category": "sightseeing",
-            "startTime": "19:30",
-            "address": "天神屋台",
-            "note": "體驗屋台文化",
-            "hours": null,
-            "price": null,
-            "transportType": "bus",
-            "travelTime": "30m",
-            "image": ""
-        }
-    ],
-    [
-        {
-            "id": 501,
-            "name": "Check-out",
-            "category": "accommodation",
-            "startTime": "10:00",
-            "address": "hotel wa hakata",
-            "note": "辦理退房，寄放行李或前往機場寄放。",
-            "hours": null,
-            "price": null,
-            "transportType": "walk",
-            "travelTime": null,
-            "image": null
-        },
-        {
-            "id": 502,
-            "name": "大濠公園 & 星巴克",
-            "category": "sightseeing",
-            "startTime": "11:00",
-            "address": "大濠公園",
-            "note": "都市綠洲，湖畔星巴克喝咖啡。",
-            "hours": null,
-            "price": null,
-            "transportType": "public",
-            "travelTime": "30m",
-            "image": "images/fu-22.jpg"
-        },
-        {
-            "id": 503,
-            "name": "壹岐神社 (備案)",
-            "category": "sightseeing",
-            "startTime": "~13:00",
-            "address": "壱岐神社 一の鳥居",
-            "note": "海邊鳥居，散步聽海浪。",
-            "hours": null,
-            "price": null,
-            "transportType": "public",
-            "travelTime": "30m",
-            "image": "images/fu-23.jpg"
-        },
-        {
-            "id": 504,
-            "name": "前往福岡機場",
-            "category": "transport",
-            "startTime": "15:00",
-            "address": "福岡機場",
-            "note": "預備搭機返台。",
-            "hours": null,
-            "price": null,
-            "transportType": "public",
-            "travelTime": "40m",
-            "image": "images/fu-2.jpg"
-        },
-        {
-            "id": 505,
-            "name": "返程班機",
-            "category": "flight",
-            "startTime": "待定",
-            "address": "福岡機場",
-            "note": "平安歸賦。",
-            "hours": null,
-            "price": null,
-            "transportType": "flight",
-            "travelTime": null,
-            "image": null
-        }
-    ]
-]);
+        // --- [資料區塊開始] ---
+        const hotelList = ref([
+            {
+                "name": "HOTEL WA HAKATA",
+                "date": "12/13 - 12/17",
+                "address": "7-3 Tenyamachi, Hakata Ward, Fukuoka, 812-0025日本",
+                "phone": "+81 92-409-4892"
+            }
+        ]);
+        const flightList = ref([
+            {
+                "origin": "TPE 桃園",
+                "dest": "FUK 福岡",
+                "depTime": "06:45",
+                "arrTime": "10:00",
+                "code": "IT240"
+            },
+            {
+                "origin": "FUK 福岡",
+                "dest": "TPE 桃園",
+                "code": "JX841",
+                "depTime": "19:10",
+                "arrTime": "20:50"
+            }
+        ]);
+        const itineraryData = ref([
+            [
+                {
+                    "id": 101,
+                    "name": "桃園機場報到",
+                    "category": "flight",
+                    "startTime": "04:45",
+                    "address": "桃園國際機場 T1",
+                    "note": "Tigerair IT240 06:45起飛",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "flight",
+                    "travelTime": null,
+                    "image": "images/fu-1.jpg"
+                },
+                {
+                    "id": 102,
+                    "name": "福岡機場 (FUK) 抵達",
+                    "category": "flight",
+                    "startTime": "10:00",
+                    "address": "福岡機場",
+                    "note": "入境審查、領取行李",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "flight",
+                    "travelTime": "2h15m",
+                    "image": "images/fu-2.jpg"
+                },
+                {
+                    "id": 103,
+                    "name": "前往飯店 Check-in/寄放行李",
+                    "category": "accommodation",
+                    "startTime": "11:00",
+                    "address": "HOTEL WA HAKATA",
+                    "note": "先安置行李",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "other",
+                    "travelTime": "20m",
+                    "image": "images/fu-3.jpg"
+                },
+                {
+                    "id": 104,
+                    "name": "博多運河城",
+                    "category": "shopping",
+                    "startTime": "12:00",
+                    "address": "博多運河城",
+                    "note": "水舞秀(每30分)、3F MUJI、2F迪士尼商店\n、B1動漫IP/扭蛋(萬代)。\n官網：https://canalcity.co.jp/zh-tw",
+                    "hours": "10:00-21:00",
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": "12m",
+                    "image": "images/fu-4.jpg",
+                    "isNoteExpanded": true
+                },
+                {
+                    "id": 105,
+                    "name": "中央光之森林",
+                    "category": "sightseeing",
+                    "startTime": "19:00",
+                    "address": "天神中央公園",
+                    "note": "透過眾多裝飾、燈光璀璨營造出夢幻般的氛圍",
+                    "hours": "12:00-23:00",
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": "20m",
+                    "image": "images/fu-21.jpg"
+                }
+            ],
+            [
+                {
+                    "id": 201,
+                    "name": "天神地下街",
+                    "category": "shopping",
+                    "startTime": "10:00",
+                    "address": "天神地下街",
+                    "note": "九州最大地下街，150家店舖。\n官網：https://www.tenchika.com/",
+                    "hours": "10:00-21:00",
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "15m",
+                    "image": "images/fu-6.jpg"
+                },
+                {
+                    "id": 202,
+                    "name": "百貨巡禮 (岩田屋/三越/大丸)",
+                    "category": "shopping",
+                    "startTime": "13:00",
+                    "address": "岩田屋本店",
+                    "note": "岩田屋(B2/3F/6F連通)\n大丸(B2甜點:福砂屋/明月堂/如水庵)。\n岩田屋：https://www.iwataya-mitsukoshi.mistore.jp.t.kq.hp.transer.com/iwataya.html\n福岡三越：https://www.iwataya-mitsukoshi.mistore.jp.t.kq.hp.transer.com/mitsukoshi/shops.html\n大丸天神：https://www.daimaru-fukuoka.jp.t.md.hp.transer.com/\n",
+                    "hours": "10:00-20:00",
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": "5m",
+                    "image": "images/fu-7.jpg",
+                    "isNoteExpanded": true
+                },
+                {
+                    "id": 203,
+                    "name": "福岡PARCO",
+                    "category": "shopping",
+                    "startTime": "15:00",
+                    "address": "福岡PARCO",
+                    "note": "年輕潮牌、動畫周邊與生活風格選物集中地。\n官網：https://tw.fukuoka.parco.jp/",
+                    "hours": "10:00-20:30",
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": "5m",
+                    "image": "images/fu-8.jpg"
+                },
+                {
+                    "id": 204,
+                    "name": "Mina 天神",
+                    "category": "shopping",
+                    "startTime": "16:30",
+                    "address": "Mina 天神",
+                    "note": "九州最大 UNIQLO、GU、LOFT。\n官網：https://www.mina-tenjin.com/index.php#googtrans(jp|zh-TW)",
+                    "hours": "10:00-20:00",
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": "5m",
+                    "image": "images/fu-9.jpg"
+                },
+                {
+                    "id": 205,
+                    "name": "晚餐: Nikuichi (燒肉)",
+                    "category": "food",
+                    "startTime": "17:30",
+                    "address": "にく屋 肉いち",
+                    "note": "預約時間 17:30。必點7種盛合。",
+                    "hours": "16:00-00:00",
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "20m",
+                    "image": "images/fu-10.jpg"
+                },
+                {
+                    "id": 206,
+                    "name": "博多聖誕市集-光之街",
+                    "category": "sightseeing",
+                    "startTime": "19:00",
+                    "address": "JR博多站前廣場",
+                    "note": "續攤感受不同於博多的聖誕氣氛。",
+                    "hours": "12:00~23:00",
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": "15m",
+                    "image": "images/fu-5.jpg"
+                }
+            ],
+            [
+                {
+                    "id": 301,
+                    "name": "前往太宰府",
+                    "category": "transport",
+                    "startTime": "10:00",
+                    "address": "太宰府站",
+                    "note": "搭乘西鐵電車前往(9點出門)。",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "40m",
+                    "image": "images/fu-12.jpg"
+                },
+                {
+                    "id": 302,
+                    "name": "寶滿宮 竈門神社",
+                    "category": "sightseeing",
+                    "startTime": "10:40",
+                    "address": "寶滿宮 竈門神社",
+                    "note": "太宰府站轉搭巴士「往內山」。求良緣、驅邪。             \n西鐵太宰府站左邊斜對面(福岡銀行)搭乘\n(一小時2班，25分與55分)",
+                    "hours": "08:30-18:00",
+                    "price": null,
+                    "transportType": "bus",
+                    "travelTime": "10m",
+                    "image": "images/fu-13.jpg",
+                    "isNoteExpanded": true
+                },
+                {
+                    "id": 303,
+                    "name": "天開稻荷神社",
+                    "category": "sightseeing",
+                    "startTime": "11:30",
+                    "address": "天開稻荷神社",
+                    "note": "九州最古老稻荷神社，有奧之院山洞。",
+                    "hours": "06:30-18:30",
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": "30m",
+                    "image": "images/fu-14.jpg"
+                },
+                {
+                    "id": 304,
+                    "name": "太宰府天滿宮 & 表參道",
+                    "category": "sightseeing",
+                    "startTime": "13:00",
+                    "address": "太宰府天滿宮",
+                    "note": "御神牛、太鼓橋、隈研吾星巴克、梅枝餅。午餐: 暖暮拉麵或一蘭(五角碗)。",
+                    "hours": "06:30-19:00",
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": "10m",
+                    "image": "images/fu-15.jpg"
+                },
+                {
+                    "id": 305,
+                    "name": "前往 LaLaport 福岡",
+                    "category": "transport",
+                    "startTime": "15:00",
+                    "address": "LaLaport 福岡",
+                    "note": "搭乘西鐵/巴士前往。",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "50m",
+                    "image": "images/fu-16.jpg"
+                },
+                {
+                    "id": 307,
+                    "name": "晚餐: 博多華味鳥 (水炊鍋)",
+                    "category": "food",
+                    "startTime": "18:15",
+                    "address": "水たき料亭 博多華味鳥 川端通り店",
+                    "note": "預約時間 18:15 (10大2小)。",
+                    "hours": "17:00-23:00",
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "40m",
+                    "image": "images/fu-17.jpg"
+                },
+                {
+                    "id": 1764922841025,
+                    "name": "天神聖誕市集",
+                    "category": "sightseeing",
+                    "startTime": "20:00",
+                    "hours": "12:00~23:00",
+                    "address": "福岡市政府西側交流廣場",
+                    "price": "",
+                    "note": "穿過拱門，映入眼簾的是一個沐浴在光芒中的世界",
+                    "transportType": "walk",
+                    "travelTime": "15m",
+                    "isNoteExpanded": false,
+                    "image": "images/fu-11.jpg"
+                }
+            ],
+            [
+                {
+                    "id": 401,
+                    "name": "櫛田神社",
+                    "category": "sightseeing",
+                    "startTime": "10:00",
+                    "address": "櫛田神社",
+                    "note": "博多總鎮守，展示山笠。",
+                    "hours": "09:00-17:00",
+                    "price": "免費",
+                    "transportType": "public",
+                    "travelTime": "20m",
+                    "image": "images/fu-18.jpg"
+                },
+                {
+                    "id": 402,
+                    "name": "博多車站周邊購物",
+                    "category": "shopping",
+                    "startTime": "~11:30",
+                    "address": "JR博多城",
+                    "note": "AMU PLAZA(Hands)、博多阪急、KITTE博多、Deitos(拉麵街)。",
+                    "hours": "10:00-20:00",
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "10m",
+                    "image": "images/fu-19.jpg",
+                    "isNoteExpanded": false
+                },
+                {
+                    "id": 404,
+                    "name": "福岡塔",
+                    "category": "sightseeing",
+                    "startTime": "16:30",
+                    "address": "福岡塔",
+                    "note": "日本最高海濱塔，冬季聖誕樹主題燈飾。",
+                    "hours": "09:30-22:00",
+                    "price": "¥1000",
+                    "transportType": "public",
+                    "travelTime": "40m",
+                    "image": "images/fu-20.jpg"
+                },
+                {
+                    "id": 405,
+                    "name": "天神屋台",
+                    "category": "sightseeing",
+                    "startTime": "19:30",
+                    "address": "天神屋台",
+                    "note": "體驗屋台文化",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "bus",
+                    "travelTime": "30m",
+                    "image": ""
+                }
+            ],
+            [
+                {
+                    "id": 501,
+                    "name": "Check-out",
+                    "category": "accommodation",
+                    "startTime": "10:00",
+                    "address": "hotel wa hakata",
+                    "note": "辦理退房，寄放行李或前往機場寄放。",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "walk",
+                    "travelTime": null,
+                    "image": null
+                },
+                {
+                    "id": 502,
+                    "name": "大濠公園 & 星巴克",
+                    "category": "sightseeing",
+                    "startTime": "11:00",
+                    "address": "大濠公園",
+                    "note": "都市綠洲，湖畔星巴克喝咖啡。",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "30m",
+                    "image": "images/fu-22.jpg"
+                },
+                {
+                    "id": 503,
+                    "name": "壹岐神社 (備案)",
+                    "category": "sightseeing",
+                    "startTime": "~13:00",
+                    "address": "壱岐神社 一の鳥居",
+                    "note": "海邊鳥居，散步聽海浪。",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "30m",
+                    "image": "images/fu-23.jpg"
+                },
+                {
+                    "id": 504,
+                    "name": "前往福岡機場",
+                    "category": "transport",
+                    "startTime": "15:00",
+                    "address": "福岡機場",
+                    "note": "預備搭機返台。",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "public",
+                    "travelTime": "40m",
+                    "image": "images/fu-2.jpg"
+                },
+                {
+                    "id": 505,
+                    "name": "返程班機",
+                    "category": "flight",
+                    "startTime": "待定",
+                    "address": "福岡機場",
+                    "note": "平安歸賦。",
+                    "hours": null,
+                    "price": null,
+                    "transportType": "flight",
+                    "travelTime": null,
+                    "image": null
+                }
+            ]
+        ]);
         const weatherData = ref([
-    {
-        "condition": "cloudy",
-        "temp": "12/6",
-        "chance": "30"
-    },
-    {
-        "condition": "sunny",
-        "temp": "11/5",
-        "chance": "10"
-    },
-    {
-        "condition": "rain",
-        "temp": "10/4",
-        "chance": "60"
-    },
-    {
-        "condition": "cloudy",
-        "temp": "9/3",
-        "chance": "20"
-    },
-    {
-        "condition": "sunny",
-        "temp": "10/4",
-        "chance": "10"
-    }
-]);
+            {
+                "condition": "cloudy",
+                "temp": "12/6",
+                "chance": "30"
+            },
+            {
+                "condition": "sunny",
+                "temp": "11/5",
+                "chance": "10"
+            },
+            {
+                "condition": "rain",
+                "temp": "10/4",
+                "chance": "60"
+            },
+            {
+                "condition": "cloudy",
+                "temp": "9/3",
+                "chance": "20"
+            },
+            {
+                "condition": "sunny",
+                "temp": "10/4",
+                "chance": "10"
+            }
+        ]);
         const checkList = ref([
-    {
-        "text": "護照 (有效期6個月以上)",
-        "checked": false
-    },
-    {
-        "text": "Visit Japan Web 填寫",
-        "checked": false
-    },
-    {
-        "text": "日幣現金 / 信用卡",
-        "checked": false
-    },
-    {
-        "text": "行動電源 & 充電線",
-        "checked": false
-    },
-    {
-        "text": "個人常備藥品",
-        "checked": false
-    },
-    {
-        "text": "電子機票 / 訂房確認信",
-        "checked": false
-    },
-    {
-        "text": "eSIM卡/漫遊開通",
-        "checked": false
-    },
-    {
-        "text": "旅遊衣物",
-        "checked": false
-    }
-]);
+            {
+                "text": "護照 (有效期6個月以上)",
+                "checked": false
+            },
+            {
+                "text": "Visit Japan Web 填寫",
+                "checked": false
+            },
+            {
+                "text": "日幣現金 / 信用卡",
+                "checked": false
+            },
+            {
+                "text": "行動電源 & 充電線",
+                "checked": false
+            },
+            {
+                "text": "個人常備藥品",
+                "checked": false
+            },
+            {
+                "text": "電子機票 / 訂房確認信",
+                "checked": false
+            },
+            {
+                "text": "eSIM卡/漫遊開通",
+                "checked": false
+            },
+            {
+                "text": "旅遊衣物",
+                "checked": false
+            }
+        ]);
         const newChecklistItem = ref('');
 
         const memoText = ref("");
@@ -1379,308 +1435,309 @@ createApp({
             return memoText.value.match(urlRegex) || [];
         });
         const shoppingList = ref([
-    {
-        "name": "明月堂博多TORIMON",
-        "image": "images/BUY-1.jpg",
-        "type": "伴手禮",
-        "note": "這是福岡最經典最具代表性的伴手禮，有著奶香的餅皮與優質的白餡做成的通 是福岡的人氣土產。\n參考價格：5入770日幣、6入1,000日幣、9入1,500日幣"
-    },
-    {
-        "name": "東雲堂 二〇加煎餅",
-        "image": "images/BUY-2.jpg",
-        "type": "伴手禮",
-        "note": "用好品質的小麥粉與蛋烤成的煎餅，累積至今已經賣了10億份以上。這個半臉面具已成為福岡的經典\n參考價格：特大煎餅3枚入648日圓、小煎餅16枚入864日圓"
-    },
-    {
-        "name": "太宰府梅枝餅",
-        "image": "images/BUY-3.jpg",
-        "type": "伴手禮",
-        "note": "在太宰府的梅枝餅名店「 の家」、「茶房 」、「甘木屋」和「 武本店」都可以買到梅枝餅的土 禮盒，而「 の家」在博多站裡也買得到"
-    },
-    {
-        "name": "福太郎 明太子仙貝",
-        "image": "images/BUY-4.jpg",
-        "type": "伴手禮",
-        "note": "福太郎的代表商品是各種口味的明太子仙貝。除了禮盒裝，還有一包一包的分裝，所以可以一次網羅各種口味。\n參考價格：2袋入180日幣、8袋入600日幣、16袋入1,200日幣"
-    },
-    {
-        "name": "博多風美庵 明太子蝦餅",
-        "image": "images/BUY-5.jpg",
-        "type": "伴手禮",
-        "note": "用日本產的米以特殊的製法絞碎後再烤成的明太子蝦餅，有著酥脆的口感，是明太子系列商品的人氣選擇。"
-    },
-    {
-        "name": "明太子名店ふくや",
-        "image": "images/BUY-6.jpg",
-        "type": "伴手禮",
-        "note": "各式各樣的明太子製品，其中可以直接擠出明太子醬的tubetube跟明太子口味的麵包脆餅是人氣商品。"
-    },
-    {
-        "name": "如水庵 筑紫もち",
-        "image": "images/BUY-7.jpg",
-        "type": "甜點",
-        "note": "天正年間（1573～1591）開始在博多販賣和菓子的傳聞，現在最具代表性的名物便是筑紫麻糬。\n參考價格：3入584日幣、5入972日幣"
-    },
-    {
-        "name": "石村萬盛堂 鶴乃子",
-        "image": "images/BUY-8.jpg",
-        "type": "甜點",
-        "note": "傳承百年以上的博多名菓，用棉花糖包覆蛋黃與手亡豆做成的內餡，是西日融合的圓形菓子。\n參考價格：4入756日圓、8入1,296日圓"
-    },
-    {
-        "name": "吉野堂 ひよ子のたまご",
-        "image": "images/BUY-9.jpg",
-        "type": "甜點",
-        "note": "吉野堂有名的小雞蛋糕在博多站與小倉站有福岡限定口味的伴手禮-內餡為甘王草莓的「小雞的蛋」，如果覺得小雞蛋糕會太甜的話，可以試試這個略帶酸味的草莓糕點。"
-    },
-    {
-        "name": "左衛門 博多ぶらぶら",
-        "image": "images/BUY-10.jpg",
-        "type": "甜點",
-        "note": "用北海道的紅豆包覆「求肥」，帶出自然簡單風味的博多名菓。\n所謂的求肥是指使用白玉粉做的甜點，口感比麻糬更為柔軟。"
-    },
-    {
-        "name": "鈴懸 鈴乃〇餅",
-        "image": "images/BUY-11.jpg",
-        "type": "甜點",
-        "note": "和菓子名店鈴懸的代表性商品，使用佐賀產的糯米，手工燒烤的皮中是北海道十勝產的紅豆餡。"
-    },
-    {
-        "name": "隆勝堂 鯛最中",
-        "image": "images/BUY-12.jpg",
-        "type": "甜點",
-        "note": "用有吉祥寓意的鯛做成的「最中」，裡面是自家製的八女抹茶餡，意外的和最中的皮很合"
-    },
-    {
-        "name": " 久原本家 茅乃舍だし",
-        "image": "images/BUY-13.jpg",
-        "type": "調味料",
-        "note": "以烤飛魚、柴魚片、沙丁魚和昆布的粉末做成的素材包，讓你能方便的煮出道地的和風高湯。無論是味增湯還是其他煮物中都可以使用並增添其料理的風味。"
-    },
-    {
-        "name": " 二鶴堂 博多の女（ひと",
-        "image": "images/BUY-15.jpg",
-        "type": "甜點",
-        "note": "以年輪蛋糕包裹羊羹之創新組合，搭配典雅的博多人形包裝，熱賣超過50年的福岡名產\n參考價格：6入389日圓、10入648日圓"
-    },
-    {
-        "name": "三日月 可頌麵包",
-        "image": "images/BUY-16.jpg",
-        "type": "麵包",
-        "note": "使用高品質的三種小麥粉、天然鹽、高級奶油與天然酵母去製作麵團，並讓麵團在將近一天的低溫發酵中引出食材自然的美味。"
-    },
-    {
-        "name": "さかえ屋 なんばん往来",
-        "image": "images/BUY-17.jpg",
-        "type": "甜點",
-        "note": "過去長崎對國外開放，從海外引進各種原料藉由長崎街道（如同絲路）送至江戶。以這個概念將南蠻文化與九州食材結合，誕生的美味伴手禮。\n參考價格：4入864日圓、8入1,728日圓"
-    },
-    {
-        "name": "chiffon cake MARIE",
-        "image": "images/BUY-18.jpg",
-        "type": "蛋糕",
-        "note": "透過九州產的小麥粉、雞蛋、牛奶，並不含其他添加物製作的戚風蛋糕，最大特色是就算冷凍販售，卻在解凍後仍保有與現做蛋糕同樣的濕潤鬆軟，像是棉花糖般在口中融化。"
-    },
-    {
-        "name": " Chocolateshop 博多の石畳",
-        "image": "images/BUY-19.jpg",
-        "type": "巧克力",
-        "note": "來自福岡自己的巧克力品牌。石畳的意思是石板，一個個生巧克力的樣子的確有幾分神似石板。"
-    },
-    {
-        "name": "PRESS BUTTER SAND",
-        "image": "images/BUY-20.jpg",
-        "type": "伴手禮",
-        "note": "有推出九州限定的「甘王草莓」口味與福岡限定的「明太子起士口味」\n參考價格：5入1,377日圓、9入2,403日圓"
-    },
-    {
-        "name": " 伊都きんぐ 甘王草莓銅鑼燒",
-        "image": "images/BUY-21.jpg",
-        "type": "甜點",
-        "note": "福岡最有名的甘王草莓伴手禮品牌，就是「伊都きんぐ」了。而這款以甘王草莓慕斯和果醬為內餡的銅鑼燒是他們家最為人氣的商品。"
-    },
-    {
-        "name": "AMANBERRY草莓奶油餅乾",
-        "image": "images/BUY-22.jpg",
-        "type": "餅乾",
-        "note": "外層貓舌餅微脆，側邊還印有英文字精緻高級，裡面是香甜柔滑生巧克力奶油，點綴淡淡甘王草莓乾酸甜果香\n參考價格：5入864日圓、8入1,296日圓"
-    },
-    {
-        "name": "YAMAYA軟管明太子醬",
-        "image": "images/BUY-23.jpg",
-        "type": "調味料",
-        "note": "熱銷超過百萬隻，牙膏式軟管方便擠壓料理，最夯粉色包裝「辛子明太子」口味，搭配法國麵包、明太子義大利麵、串燒、白飯等，濃厚微辣海味口口都是極品。\n冷藏保存，建議在機場免稅店買完，直接帶回台灣，參考價格：1條756日圓"
-    },
-    {
-        "name": "福砂屋長崎蛋糕",
-        "image": "images/BUY-24.jpg",
-        "type": "蛋糕",
-        "note": "堅持傳統古法，職人純手工攪拌不用機器，蛋糕底部有明顯「砂糖結晶顆粒」是亮點，香甜濕潤，讓人回味無窮。\n參考價格：0.6號一條1,458日圓、1號一條2,268日圓"
-    },
-    {
-        "name": "千鳥屋本家 捲心酥",
-        "image": "images/BUY-25.jpg",
-        "type": "餅乾",
-        "note": "奥地利提洛邦傳統餅乾捲，以新鮮牛乳和奶油製成，厚實超香脆，口味有抹茶、草莓、香草、咖啡四種。\n參考價格：捲心酥1罐1,800日幣"
-    }
-]);
+            {
+                "name": "明月堂博多TORIMON",
+                "image": "images/BUY-1.jpg",
+                "type": "伴手禮",
+                "note": "這是福岡最經典最具代表性的伴手禮，有著奶香的餅皮與優質的白餡做成的通 是福岡的人氣土產。\n參考價格：5入770日幣、6入1,000日幣、9入1,500日幣"
+            },
+            {
+                "name": "東雲堂 二〇加煎餅",
+                "image": "images/BUY-2.jpg",
+                "type": "伴手禮",
+                "note": "用好品質的小麥粉與蛋烤成的煎餅，累積至今已經賣了10億份以上。這個半臉面具已成為福岡的經典\n參考價格：特大煎餅3枚入648日圓、小煎餅16枚入864日圓"
+            },
+            {
+                "name": "太宰府梅枝餅",
+                "image": "images/BUY-3.jpg",
+                "type": "伴手禮",
+                "note": "在太宰府的梅枝餅名店「 の家」、「茶房 」、「甘木屋」和「 武本店」都可以買到梅枝餅的土 禮盒，而「 の家」在博多站裡也買得到"
+            },
+            {
+                "name": "福太郎 明太子仙貝",
+                "image": "images/BUY-4.jpg",
+                "type": "伴手禮",
+                "note": "福太郎的代表商品是各種口味的明太子仙貝。除了禮盒裝，還有一包一包的分裝，所以可以一次網羅各種口味。\n參考價格：2袋入180日幣、8袋入600日幣、16袋入1,200日幣"
+            },
+            {
+                "name": "博多風美庵 明太子蝦餅",
+                "image": "images/BUY-5.jpg",
+                "type": "伴手禮",
+                "note": "用日本產的米以特殊的製法絞碎後再烤成的明太子蝦餅，有著酥脆的口感，是明太子系列商品的人氣選擇。"
+            },
+            {
+                "name": "明太子名店ふくや",
+                "image": "images/BUY-6.jpg",
+                "type": "伴手禮",
+                "note": "各式各樣的明太子製品，其中可以直接擠出明太子醬的tubetube跟明太子口味的麵包脆餅是人氣商品。"
+            },
+            {
+                "name": "如水庵 筑紫もち",
+                "image": "images/BUY-7.jpg",
+                "type": "甜點",
+                "note": "天正年間（1573～1591）開始在博多販賣和菓子的傳聞，現在最具代表性的名物便是筑紫麻糬。\n參考價格：3入584日幣、5入972日幣"
+            },
+            {
+                "name": "石村萬盛堂 鶴乃子",
+                "image": "images/BUY-8.jpg",
+                "type": "甜點",
+                "note": "傳承百年以上的博多名菓，用棉花糖包覆蛋黃與手亡豆做成的內餡，是西日融合的圓形菓子。\n參考價格：4入756日圓、8入1,296日圓"
+            },
+            {
+                "name": "吉野堂 ひよ子のたまご",
+                "image": "images/BUY-9.jpg",
+                "type": "甜點",
+                "note": "吉野堂有名的小雞蛋糕在博多站與小倉站有福岡限定口味的伴手禮-內餡為甘王草莓的「小雞的蛋」，如果覺得小雞蛋糕會太甜的話，可以試試這個略帶酸味的草莓糕點。"
+            },
+            {
+                "name": "左衛門 博多ぶらぶら",
+                "image": "images/BUY-10.jpg",
+                "type": "甜點",
+                "note": "用北海道的紅豆包覆「求肥」，帶出自然簡單風味的博多名菓。\n所謂的求肥是指使用白玉粉做的甜點，口感比麻糬更為柔軟。"
+            },
+            {
+                "name": "鈴懸 鈴乃〇餅",
+                "image": "images/BUY-11.jpg",
+                "type": "甜點",
+                "note": "和菓子名店鈴懸的代表性商品，使用佐賀產的糯米，手工燒烤的皮中是北海道十勝產的紅豆餡。"
+            },
+            {
+                "name": "隆勝堂 鯛最中",
+                "image": "images/BUY-12.jpg",
+                "type": "甜點",
+                "note": "用有吉祥寓意的鯛做成的「最中」，裡面是自家製的八女抹茶餡，意外的和最中的皮很合"
+            },
+            {
+                "name": " 久原本家 茅乃舍だし",
+                "image": "images/BUY-13.jpg",
+                "type": "調味料",
+                "note": "以烤飛魚、柴魚片、沙丁魚和昆布的粉末做成的素材包，讓你能方便的煮出道地的和風高湯。無論是味增湯還是其他煮物中都可以使用並增添其料理的風味。"
+            },
+            {
+                "name": " 二鶴堂 博多の女（ひと",
+                "image": "images/BUY-15.jpg",
+                "type": "甜點",
+                "note": "以年輪蛋糕包裹羊羹之創新組合，搭配典雅的博多人形包裝，熱賣超過50年的福岡名產\n參考價格：6入389日圓、10入648日圓"
+            },
+            {
+                "name": "三日月 可頌麵包",
+                "image": "images/BUY-16.jpg",
+                "type": "麵包",
+                "note": "使用高品質的三種小麥粉、天然鹽、高級奶油與天然酵母去製作麵團，並讓麵團在將近一天的低溫發酵中引出食材自然的美味。"
+            },
+            {
+                "name": "さかえ屋 なんばん往来",
+                "image": "images/BUY-17.jpg",
+                "type": "甜點",
+                "note": "過去長崎對國外開放，從海外引進各種原料藉由長崎街道（如同絲路）送至江戶。以這個概念將南蠻文化與九州食材結合，誕生的美味伴手禮。\n參考價格：4入864日圓、8入1,728日圓"
+            },
+            {
+                "name": "chiffon cake MARIE",
+                "image": "images/BUY-18.jpg",
+                "type": "蛋糕",
+                "note": "透過九州產的小麥粉、雞蛋、牛奶，並不含其他添加物製作的戚風蛋糕，最大特色是就算冷凍販售，卻在解凍後仍保有與現做蛋糕同樣的濕潤鬆軟，像是棉花糖般在口中融化。"
+            },
+            {
+                "name": " Chocolateshop 博多の石畳",
+                "image": "images/BUY-19.jpg",
+                "type": "巧克力",
+                "note": "來自福岡自己的巧克力品牌。石畳的意思是石板，一個個生巧克力的樣子的確有幾分神似石板。"
+            },
+            {
+                "name": "PRESS BUTTER SAND",
+                "image": "images/BUY-20.jpg",
+                "type": "伴手禮",
+                "note": "有推出九州限定的「甘王草莓」口味與福岡限定的「明太子起士口味」\n參考價格：5入1,377日圓、9入2,403日圓"
+            },
+            {
+                "name": " 伊都きんぐ 甘王草莓銅鑼燒",
+                "image": "images/BUY-21.jpg",
+                "type": "甜點",
+                "note": "福岡最有名的甘王草莓伴手禮品牌，就是「伊都きんぐ」了。而這款以甘王草莓慕斯和果醬為內餡的銅鑼燒是他們家最為人氣的商品。"
+            },
+            {
+                "name": "AMANBERRY草莓奶油餅乾",
+                "image": "images/BUY-22.jpg",
+                "type": "餅乾",
+                "note": "外層貓舌餅微脆，側邊還印有英文字精緻高級，裡面是香甜柔滑生巧克力奶油，點綴淡淡甘王草莓乾酸甜果香\n參考價格：5入864日圓、8入1,296日圓"
+            },
+            {
+                "name": "YAMAYA軟管明太子醬",
+                "image": "images/BUY-23.jpg",
+                "type": "調味料",
+                "note": "熱銷超過百萬隻，牙膏式軟管方便擠壓料理，最夯粉色包裝「辛子明太子」口味，搭配法國麵包、明太子義大利麵、串燒、白飯等，濃厚微辣海味口口都是極品。\n冷藏保存，建議在機場免稅店買完，直接帶回台灣，參考價格：1條756日圓"
+            },
+            {
+                "name": "福砂屋長崎蛋糕",
+                "image": "images/BUY-24.jpg",
+                "type": "蛋糕",
+                "note": "堅持傳統古法，職人純手工攪拌不用機器，蛋糕底部有明顯「砂糖結晶顆粒」是亮點，香甜濕潤，讓人回味無窮。\n參考價格：0.6號一條1,458日圓、1號一條2,268日圓"
+            },
+            {
+                "name": "千鳥屋本家 捲心酥",
+                "image": "images/BUY-25.jpg",
+                "type": "餅乾",
+                "note": "奥地利提洛邦傳統餅乾捲，以新鮮牛乳和奶油製成，厚實超香脆，口味有抹茶、草莓、香草、咖啡四種。\n參考價格：捲心酥1罐1,800日幣"
+            }
+        ]);
         const foodList = ref([
-    {
-        "name": "Dacomecca",
-        "note": "博多區有名麵包店，鹹甜評價高。推薦：香腸、坦都里烤雞、漢堡肉。",
-        "address": "Dacomecca",
-        "type": "麵包",
-        "image": "images/EAT-1.jpg"
-    },
-    {
-        "name": "The Full Full Hakata",
-        "note": "明太子法式麵包名店，運河城步行2分。週二公休。",
-        "address": "The Full Full Hakata",
-        "type": "麵包",
-        "image": "images/EAT-2.jpg"
-    },
-    {
-        "name": "MIGNON 博多店",
-        "note": "位於JR中央口。經典小可頌（巧克力、原味、地瓜）。",
-        "address": "MIGNON 博多店",
-        "type": "甜點",
-        "image": "images/EAT-3.jpg"
-    },
-    {
-        "name": "Cafe Mutsukado",
-        "note": "AMU PLAZA 5樓。主打生吐司，推薦蛋沙拉吐司&水果三明治。",
-        "address": "Cafe Mutsukado",
-        "type": "咖啡廳",
-        "image": "images/EAT-4.jpg"
-    },
-    {
-        "name": "Pain Stock 天神店",
-        "note": "中洲川端站步行4分。主打天然酵母麵包，明太子法棍需櫃檯點。",
-        "address": "Pain Stock 天神店",
-        "type": "麵包",
-        "image": "images/EAT-5.jpg"
-    },
-    {
-        "name": "Truffle Bakery",
-        "note": "木村拓哉推薦。招牌：白松露鹽麵包、黑松露蛋沙拉三明治。",
-        "address": "mills by Truffle Bakery ソラリアステージ店",
-        "type": "麵包",
-        "image": "images/EAT-6.jpg"
-    },
-    {
-        "name": "博多一雙",
-        "note": "豚骨泡沫系，又臭又香又難忘。",
-        "address": "博多一雙",
-        "type": "拉麵",
-        "image": "images/EAT-7.jpg"
-    },
-    {
-        "name": "博多拉麵 ShinShin",
-        "note": "濃郁卻清爽不膩。招牌：純情拉麵、博多強棒麵。",
-        "address": "博多拉麵 ShinShin",
-        "type": "拉麵",
-        "image": "images/EAT-8.jpg"
-    },
-    {
-        "name": "麵屋兼虎",
-        "note": "沾麵系霸主。招牌：味玉濃厚沾麵。",
-        "address": "麵屋兼虎",
-        "type": "拉麵",
-        "image": "images/EAT-9.jpg"
-    },
-    {
-        "name": "大砲拉麵",
-        "note": "久留米70年老店。獨家豚骨湯底。招牌：昔拉麵。",
-        "address": "大砲ラーメン 天神今泉店",
-        "type": "拉麵",
-        "image": "images/EAT-10.jpg"
-    },
-    {
-        "name": "麵屋我ガ (Gaga)",
-        "note": "傳為一蘭創辦人孫子開的。湯頭較濃郁。",
-        "address": "麺屋我ガ 天神店",
-        "type": "拉麵",
-        "image": "images/EAT-11.jpg"
-    },
-    {
-        "name": "茶壺烏龍麵 (博多あかちょこべ)",
-        "note": "特殊茶壺裝盛。麵條口感獨特。",
-        "address": "茶壺烏龍麵 (博多あかちょこべ)",
-        "type": "烏龍麵",
-        "image": "images/EAT-12.jpg"
-    },
-    {
-        "name": "麵屋 Isii (Menya Ishii)",
-        "note": "原創烏龍麵，口感滑順。",
-        "address": "麵屋 Isii (Menya Ishii)",
-        "type": "烏龍麵",
-        "image": "images/EAT-13.jpg"
-    },
-    {
-        "name": "FUK COFFEE",
-        "note": "大濠公園附近/祇園。昭和風布丁口感紮實。",
-        "address": "FUK COFFEE",
-        "type": "咖啡廳",
-        "image": "images/EAT-14.jpg"
-    },
-    {
-        "name": "藍瓶咖啡 天神店",
-        "note": "九州第一間。警固神社旁。",
-        "address": "藍瓶咖啡 天神店",
-        "type": "咖啡廳",
-        "image": "images/EAT-15.jpg"
-    },
-    {
-        "name": "Coffee County",
-        "note": "專注咖啡豆產地香氣。",
-        "address": "Coffee County Fukuoka",
-        "type": "咖啡廳",
-        "image": "images/EAT-16.jpg"
-    },
-    {
-        "name": "Rec Coffee",
-        "note": "現代簡約。推薦拿鐵系列&硬布丁。",
-        "address": "Rec Coffee 福岡",
-        "type": "咖啡廳",
-        "image": "images/EAT-17.jpg"
-    },
-    {
-        "name": "かわ屋 (Kawaya)",
-        "note": "招牌烤雞皮需6天燒烤熟成。",
-        "address": "かわ屋 祇園店",
-        "type": "居酒屋",
-        "image": "images/EAT-18.jpg"
-    },
-    {
-        "name": "とりかわ粋恭 (Suikyo)",
-        "note": "與Kawaya齊名，酥脆口感濃郁。",
-        "address": "とりかわ粋恭 (Suikyo)",
-        "type": "居酒屋",
-        "image": "images/EAT-19.jpg"
-    },
-    {
-        "name": "博多雞皮大臣",
-        "note": "在地人氣店，分醬燒與鹽燒。",
-        "address": "博多雞皮大臣",
-        "type": "居酒屋",
-        "image": "images/EAT-20.jpg"
-    },
-    {
-        "name": "寶雲亭",
-        "note": "一口餃子，外皮薄透。只靠洋蔥韭黃絞肉提味。",
-        "address": "寶雲亭",
-        "type": "餃子",
-        "image": "images/EAT-21.jpg"
-    },
-    {
-        "name": "海木豆皮壽司",
-        "note": "豆皮壽司界的愛馬仕。只收現金。",
-        "address": "だしいなり 海木 福岡",
-        "type": "壽司",
-        "image": "images/EAT-22.jpg"
-    }
-]);
+            {
+                "name": "Dacomecca",
+                "note": "博多區有名麵包店，鹹甜評價高。推薦：香腸、坦都里烤雞、漢堡肉。",
+                "address": "Dacomecca",
+                "type": "麵包",
+                "image": "images/EAT-1.jpg"
+            },
+            {
+                "name": "The Full Full Hakata",
+                "note": "明太子法式麵包名店，運河城步行2分。週二公休。",
+                "address": "The Full Full Hakata",
+                "type": "麵包",
+                "image": "images/EAT-2.jpg"
+            },
+            {
+                "name": "MIGNON 博多店",
+                "note": "位於JR中央口。經典小可頌（巧克力、原味、地瓜）。",
+                "address": "MIGNON 博多店",
+                "type": "甜點",
+                "image": "images/EAT-3.jpg"
+            },
+            {
+                "name": "Cafe Mutsukado",
+                "note": "AMU PLAZA 5樓。主打生吐司，推薦蛋沙拉吐司&水果三明治。",
+                "address": "Cafe Mutsukado",
+                "type": "咖啡廳",
+                "image": "images/EAT-4.jpg"
+            },
+            {
+                "name": "Pain Stock 天神店",
+                "note": "中洲川端站步行4分。主打天然酵母麵包，明太子法棍需櫃檯點。",
+                "address": "Pain Stock 天神店",
+                "type": "麵包",
+                "image": "images/EAT-5.jpg"
+            },
+            {
+                "name": "Truffle Bakery",
+                "note": "木村拓哉推薦。招牌：白松露鹽麵包、黑松露蛋沙拉三明治。",
+                "address": "mills by Truffle Bakery ソラリアステージ店",
+                "type": "麵包",
+                "image": "images/EAT-6.jpg"
+            },
+            {
+                "name": "博多一雙",
+                "note": "豚骨泡沫系，又臭又香又難忘。",
+                "address": "博多一雙",
+                "type": "拉麵",
+                "image": "images/EAT-7.jpg"
+            },
+            {
+                "name": "博多拉麵 ShinShin",
+                "note": "濃郁卻清爽不膩。招牌：純情拉麵、博多強棒麵。",
+                "address": "博多拉麵 ShinShin",
+                "type": "拉麵",
+                "image": "images/EAT-8.jpg"
+            },
+            {
+                "name": "麵屋兼虎",
+                "note": "沾麵系霸主。招牌：味玉濃厚沾麵。",
+                "address": "麵屋兼虎",
+                "type": "拉麵",
+                "image": "images/EAT-9.jpg"
+            },
+            {
+                "name": "大砲拉麵",
+                "note": "久留米70年老店。獨家豚骨湯底。招牌：昔拉麵。",
+                "address": "大砲ラーメン 天神今泉店",
+                "type": "拉麵",
+                "image": "images/EAT-10.jpg"
+            },
+            {
+                "name": "麵屋我ガ (Gaga)",
+                "note": "傳為一蘭創辦人孫子開的。湯頭較濃郁。",
+                "address": "麺屋我ガ 天神店",
+                "type": "拉麵",
+                "image": "images/EAT-11.jpg"
+            },
+            {
+                "name": "茶壺烏龍麵 (博多あかちょこべ)",
+                "note": "特殊茶壺裝盛。麵條口感獨特。",
+                "address": "茶壺烏龍麵 (博多あかちょこべ)",
+                "type": "烏龍麵",
+                "image": "images/EAT-12.jpg"
+            },
+            {
+                "name": "麵屋 Isii (Menya Ishii)",
+                "note": "原創烏龍麵，口感滑順。",
+                "address": "麵屋 Isii (Menya Ishii)",
+                "type": "烏龍麵",
+                "image": "images/EAT-13.jpg"
+            },
+            {
+                "name": "FUK COFFEE",
+                "note": "大濠公園附近/祇園。昭和風布丁口感紮實。",
+                "address": "FUK COFFEE",
+                "type": "咖啡廳",
+                "image": "images/EAT-14.jpg"
+            },
+            {
+                "name": "藍瓶咖啡 天神店",
+                "note": "九州第一間。警固神社旁。",
+                "address": "藍瓶咖啡 天神店",
+                "type": "咖啡廳",
+                "image": "images/EAT-15.jpg"
+            },
+            {
+                "name": "Coffee County",
+                "note": "專注咖啡豆產地香氣。",
+                "address": "Coffee County Fukuoka",
+                "type": "咖啡廳",
+                "image": "images/EAT-16.jpg"
+            },
+            {
+                "name": "Rec Coffee",
+                "note": "現代簡約。推薦拿鐵系列&硬布丁。",
+                "address": "Rec Coffee 福岡",
+                "type": "咖啡廳",
+                "image": "images/EAT-17.jpg"
+            },
+            {
+                "name": "かわ屋 (Kawaya)",
+                "note": "招牌烤雞皮需6天燒烤熟成。",
+                "address": "かわ屋 祇園店",
+                "type": "居酒屋",
+                "image": "images/EAT-18.jpg"
+            },
+            {
+                "name": "とりかわ粋恭 (Suikyo)",
+                "note": "與Kawaya齊名，酥脆口感濃郁。",
+                "address": "とりかわ粋恭 (Suikyo)",
+                "type": "居酒屋",
+                "image": "images/EAT-19.jpg"
+            },
+            {
+                "name": "博多雞皮大臣",
+                "note": "在地人氣店，分醬燒與鹽燒。",
+                "address": "博多雞皮大臣",
+                "type": "居酒屋",
+                "image": "images/EAT-20.jpg"
+            },
+            {
+                "name": "寶雲亭",
+                "note": "一口餃子，外皮薄透。只靠洋蔥韭黃絞肉提味。",
+                "address": "寶雲亭",
+                "type": "餃子",
+                "image": "images/EAT-21.jpg"
+            },
+            {
+                "name": "海木豆皮壽司",
+                "note": "豆皮壽司界的愛馬仕。只收現金。",
+                "address": "だしいなり 海木 福岡",
+                "type": "壽司",
+                "image": "images/EAT-22.jpg"
+            }
+        ]);
         const expenses = ref([]);
+        const exchangeRate = ref(0.205);
         // --- [資料區塊結束] ---
 
         const foodEditIndex = ref(null);
@@ -1753,7 +1810,7 @@ createApp({
         const newExpense = ref({ name: '', amount: null, category: 'food', date: new Date().toISOString().substring(0, 10), payment: 'cash' });
         const currencyInput = ref(10000);
         const currencyResult = ref(0);
-        const exchangeRate = ref(0.205);
+        
         const currentItinerary = computed(() => {
             if (!itineraryData.value[selectedDateIndex.value]) itineraryData.value[selectedDateIndex.value] = [];
             return itineraryData.value[selectedDateIndex.value];
@@ -1769,6 +1826,8 @@ createApp({
         const getWeatherIcon = (c) => ({ snow: 'fa-solid fa-snowflake', sunny: 'fa-solid fa-sun', cloudy: 'fa-solid fa-cloud', rain: 'fa-solid fa-cloud-showers-heavy' }[c] || 'fa-solid fa-cloud');
         const getWeatherDescription = (c) => ({ snow: '降雪', sunny: '晴朗', cloudy: '多雲', rain: '降雨' }[c] || '陰天');
         const getTransportIcon = (t) => ({ walk: 'fa-solid fa-shoe-prints', car: 'fa-solid fa-car-side', bus: 'fa-solid fa-bus-simple', public: 'fa-solid fa-train-subway', flight: 'fa-solid fa-plane' }[t] || 'fa-solid fa-arrow-right-long');
+        
+        // --- 修正後的 openMap 功能 ---
         const openMap = (q) => { 
             if (q) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, '_blank');
         };
@@ -1777,15 +1836,12 @@ createApp({
             const dest = end.address || end.name;
             if (origin && dest) window.open(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&travelmode=transit`, '_blank');
         };
+
         const handleAddClick = () => {
-            if (currentTab.value === 'itinerary') { resetItineraryForm();
-            showItineraryModal.value = true; }
-            else if (currentTab.value === 'shopping') { resetShoppingForm();
-            showShoppingModal.value = true; }
-            else if (currentTab.value === 'food') { resetFoodForm();
-            showFoodModal.value = true; } 
-            else if (currentTab.value === 'expenses') { resetExpenseForm();
-            showExpenseModal.value = true; }
+            if (currentTab.value === 'itinerary') { resetItineraryForm(); showItineraryModal.value = true; }
+            else if (currentTab.value === 'shopping') { resetShoppingForm(); showShoppingModal.value = true; }
+            else if (currentTab.value === 'food') { resetFoodForm(); showFoodModal.value = true; } 
+            else if (currentTab.value === 'expenses') { resetExpenseForm(); showExpenseModal.value = true; }
         };
         const openInfoModal = (type) => {
             infoModalType.value = type;
@@ -1828,8 +1884,7 @@ createApp({
         };
 
         const removeFlight = (index) => { if(confirm('確定刪除此航班資訊？')) flightList.value.splice(index, 1); };
-        const removeHotel = (index) => { if(confirm('確定刪除此住宿資訊？')) hotelList.value.splice(index, 1);
-        };
+        const removeHotel = (index) => { if(confirm('確定刪除此住宿資訊？')) hotelList.value.splice(index, 1); };
         
         const addChecklistItem = () => {
             if (newChecklistItem.value.trim()) {
@@ -1970,8 +2025,8 @@ createApp({
             }
         };
         // --- 自動存檔功能 (LocalStorage) ---
-        // 版本更新 v13
-        const STORAGE_KEY = 'fukuoka_trip_data_v13';
+        // 版本更新 v14 (加入新功能後版本升級)
+        const STORAGE_KEY = 'fukuoka_trip_data_v14';
         const saveToStorage = () => {
             const dataToSave = {
                 tripSettings: tripSettings.value, 
@@ -1984,14 +2039,15 @@ createApp({
                 hotelList: hotelList.value,
                 flightList: flightList.value,
                 memoText: memoText.value,
-                exchangeRate: exchangeRate.value
+                exchangeRate: exchangeRate.value,
+                weatherData: weatherData.value // 確保天氣資訊也能存檔
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
         };
 
         // 監聽資料變化
         watch(
-            [tripSettings, dates, itineraryData, foodList, shoppingList, expenses, checkList, hotelList, flightList, memoText, exchangeRate],
+            [tripSettings, dates, itineraryData, foodList, shoppingList, expenses, checkList, hotelList, flightList, memoText, exchangeRate, weatherData],
             () => { saveToStorage(); },
             { deep: true }
         );
@@ -2011,6 +2067,7 @@ createApp({
                     if(parsed.flightList) flightList.value = parsed.flightList;
                     if(parsed.memoText) memoText.value = parsed.memoText;
                     if(parsed.exchangeRate) exchangeRate.value = parsed.exchangeRate;
+                    if(parsed.weatherData) weatherData.value = parsed.weatherData;
                 } catch (e) {
                     console.error('讀取存檔失敗', e);
                 }
@@ -2020,8 +2077,6 @@ createApp({
         const generateExportCode = () => {
             // 產生 JSON stringify 的字串，並加上 const xxx = ref(...)
             let code = `// --- [資料區塊開始] ---\n`;
-            code += `        const tripSettings = ref(${JSON.stringify(tripSettings.value, null, 4)});\n`;
-            code += `        const dates = ref(${JSON.stringify(dates.value, null, 4)});\n`;
             code += `        const hotelList = ref(${JSON.stringify(hotelList.value, null, 4)});\n`;
             code += `        const flightList = ref(${JSON.stringify(flightList.value, null, 4)});\n`;
             code += `        const itineraryData = ref(${JSON.stringify(itineraryData.value, null, 4)});\n`;
@@ -2040,7 +2095,7 @@ createApp({
             showExportModal.value = true;
         };
 
-        // --- 新增重置資料功能 (方法 C) ---
+        // --- 新增重置資料功能 ---
         const resetData = () => {
             if(confirm('警告：這將會清除所有您在手機上新增的紀錄，並還原成網頁預設值。確定要重置嗎？')) {
                 localStorage.removeItem(STORAGE_KEY);
@@ -2051,23 +2106,84 @@ createApp({
         const formatNoteWithLinks = (text) => {
             if (!text) return '';
             // 修正 HTML Entity
-            let safeText = text.replace(/&/g, "&amp;")
-                               .replace(/</g, "&lt;")
-                               .replace(/>/g, "&gt;")
-                               .replace(/"/g, "&quot;")
-                               .replace(/'/g, "&#039;");
+            let safeText = text.replace(/&/g, "&")
+                               .replace(/</g, "<")
+                               .replace(/>/g, ">")
+                               .replace(/"/g, """)
+                               .replace(/'/g, "'");
             
             const urlRegex = /(https?:\/\/[^\s]+)/g;
             // 修正 onclick 事件
-           
             const withLinks = safeText.replace(urlRegex, '<a href="$1" target="_blank" class="text-blue-600 underline break-all" onclick="event.stopPropagation()">$1</a>');
             return withLinks.replace(/\n/g, '<br>');
+        };
+
+        // --- 新增功能區塊 ---
+        
+        // 1. 複製功能 & Toast 通知
+        const toast = ref({ show: false, message: '' });
+        const showToast = (msg) => {
+            toast.value.message = msg;
+            toast.value.show = true;
+            setTimeout(() => toast.value.show = false, 2000);
+        };
+        const copyToClipboard = (text) => {
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('地址已複製');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("Copy");
+                document.body.removeChild(textArea);
+                showToast('地址已複製');
+            });
+        };
+
+        // 2. 編輯天氣
+        const showWeatherModal = ref(false);
+        const tempWeather = ref({ condition: 'sunny', high: 0, low: 0, chance: 0 });
+        
+        const openWeatherModal = () => {
+            if (!weatherData.value[selectedDateIndex.value]) return;
+            const current = weatherData.value[selectedDateIndex.value];
+            const temps = current.temp.split('/');
+            tempWeather.value = {
+                condition: current.condition,
+                high: temps[0] || 0,
+                low: temps[1] || 0,
+                chance: current.chance
+            };
+            showWeatherModal.value = true;
+        };
+        
+        const saveWeather = () => {
+             weatherData.value[selectedDateIndex.value] = {
+                 condition: tempWeather.value.condition,
+                 temp: `${tempWeather.value.high}/${tempWeather.value.low}`,
+                 chance: tempWeather.value.chance
+             };
+             showWeatherModal.value = false;
+        };
+
+        // 3. 回到頂部按鈕
+        const showBackToTop = ref(false);
+        const handleScroll = () => {
+            showBackToTop.value = window.scrollY > 300;
+        };
+        const scrollToTop = () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         onMounted(() => { 
             loadFromStorage();
             calculateCurrency(); 
+            window.addEventListener('scroll', handleScroll);
         });
+
         return {
             currentTab, dates, 
             selectedDateIndex, currentItinerary, hotelList, flightList, shoppingList, expenses, weatherData,
@@ -2085,9 +2201,13 @@ createApp({
             addChecklistItem, removeChecklistItem, generateExportCode,
             resetData,
             tripSettings, showTitleModal, addNewDay, removeLastDay,
-            formatNoteWithLinks // 新增匯出
+            formatNoteWithLinks,
+            // 新增返回
+            copyToClipboard, toast,
+            showWeatherModal, tempWeather, openWeatherModal, saveWeather,
+            showBackToTop, scrollToTop
         };
-}
+    }
 }).mount('#app');
 </script>
 </body>
