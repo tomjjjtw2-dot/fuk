@@ -45,7 +45,6 @@ body {
     background-color: #ffffff;
     box-shadow: 0 0 30px rgba(93, 64, 55, 0.05); 
     position: relative;
-    /* 修改：底部留白加大，避免內容被底部導覽列遮住 */
     padding-bottom: 100px;
 }
 
@@ -90,8 +89,6 @@ body {
     z-index: 20;
 }
 
-/* 舊的 side-tab-bar 樣式已移除 */
-
 .app-main {
     padding-top: 25px !important;
     position: relative;
@@ -101,7 +98,6 @@ body {
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* 自定義捲軸樣式 */
 .custom-scrollbar::-webkit-scrollbar {
     width: 4px;
 }
@@ -161,7 +157,6 @@ body {
     top: 0;
 }
 
-/* Checkbox Style */
 .checkbox-wrapper input:checked + div {
     background-color: #01579B;
     border-color: #01579B;
@@ -169,9 +164,29 @@ body {
 .checkbox-wrapper input:checked + div svg {
     display: block;
 }
-/* 為了 iPhone 底部安全區域 */
 .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 新增：分類標籤按鈕樣式 */
+.category-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+.category-pill.active {
+    background-color: #01579B;
+    color: white;
+    box-shadow: 0 2px 8px rgba(1, 87, 155, 0.3);
+}
+.category-pill:not(.active) {
+    background-color: white;
+    color: #64748b;
+    border-color: #e2e8f0;
 }
 </style>
 </head>
@@ -301,7 +316,10 @@ body {
                         </div>
                     </div>
                 </div>
-                <p class="text-[10px] text-cyan-300 mt-3 text-right relative z-10">匯率基準: {{ EXCHANGE_RATE }}</p>
+                <div class="flex justify-end items-center mt-3 relative z-10 space-x-2">
+                    <label class="text-[10px] text-cyan-200">目前匯率:</label>
+                    <input type="number" v-model="exchangeRate" @input="calculateCurrency" step="0.001" class="w-20 bg-white/20 border border-white/30 rounded-lg px-2 py-1 text-white text-xs text-center focus:outline-none focus:bg-white/30 font-bold">
+                </div>
             </div>
 
             <div class="bg-white rounded-3xl p-6 card-shadow">
@@ -451,17 +469,24 @@ body {
         </div>
 
         <div v-if="currentTab === 'food'" class="animate-fade-in">
-             <div class="sticky top-0 bg-[#FFF8E7] z-10 pb-4 pt-1">
-                <div class="relative">
+             <div class="sticky top-0 bg-[#FFF8E7] z-10 pb-2 pt-1">
+                <div class="relative mb-2">
                     <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
                     <input v-model="foodSearchQuery" type="text" placeholder="搜尋美食 (例如: 拉麵, 布丁...)" class="w-full bg-white rounded-xl py-3 pl-10 pr-4 shadow-sm text-sm focus:ring-2 focus:ring-deep-sea-blue outline-none border border-slate-100">
                     <button v-if="foodSearchQuery" @click="foodSearchQuery = ''" class="absolute right-3 top-3 text-slate-300 hover:text-slate-500">
                         <i class="fa-solid fa-circle-xmark"></i>
                     </button>
                 </div>
+                <div class="flex overflow-x-auto hide-scrollbar space-x-2 px-1 pb-1">
+                    <button v-for="cat in foodCategories" :key="cat" 
+                        @click="selectedFoodCategory = cat"
+                        :class="['category-pill', selectedFoodCategory === cat ? 'active' : '']">
+                        {{ cat }}
+                    </button>
+                </div>
             </div>
 
-             <div class="grid grid-cols-2 gap-4">
+             <div class="grid grid-cols-2 gap-4 mt-2">
                  <div v-for="(item, idx) in filteredFoodList" :key="item.originalIndex" 
                      class="bg-white rounded-2xl p-3 card-shadow relative group cursor-pointer hover:shadow-lg transition-all"
                      @click="openMap(item.address || item.name)"> 
@@ -469,6 +494,9 @@ body {
                         <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
                         <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
                              <i class="fa-solid fa-utensils text-3xl"></i>
+                        </div>
+                        <div v-if="item.type" class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full font-bold">
+                            {{ item.type }}
                         </div>
                         <div class="absolute bottom-2 right-2 bg-white/80 rounded-full w-6 h-6 flex items-center justify-center text-deep-sea-blue text-xs shadow-sm">
                             <i class="fa-solid fa-location-arrow"></i>
@@ -492,23 +520,33 @@ body {
         </div>
 
         <div v-if="currentTab === 'shopping'" class="animate-fade-in">
-             <div class="sticky top-0 bg-[#FFF8E7] z-10 pb-4 pt-1">
-                <div class="relative">
+             <div class="sticky top-0 bg-[#FFF8E7] z-10 pb-2 pt-1">
+                <div class="relative mb-2">
                     <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
                     <input v-model="shoppingSearchQuery" type="text" placeholder="搜尋購物清單..." class="w-full bg-white rounded-xl py-3 pl-10 pr-4 shadow-sm text-sm focus:ring-2 focus:ring-deep-sea-blue outline-none border border-slate-100">
                     <button v-if="shoppingSearchQuery" @click="shoppingSearchQuery = ''" class="absolute right-3 top-3 text-slate-300 hover:text-slate-500">
                         <i class="fa-solid fa-circle-xmark"></i>
                     </button>
                 </div>
+                <div class="flex overflow-x-auto hide-scrollbar space-x-2 px-1 pb-1">
+                    <button v-for="cat in shoppingCategories" :key="cat" 
+                        @click="selectedShoppingCategory = cat"
+                        :class="['category-pill', selectedShoppingCategory === cat ? 'active' : '']">
+                        {{ cat }}
+                    </button>
+                </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4 mt-2">
                 <div v-for="(item, idx) in filteredShoppingList" :key="item.originalIndex" class="bg-white rounded-2xl p-3 card-shadow relative group">
                     
                     <div class="w-[80%] mx-auto h-32 bg-slate-50 rounded-xl mb-2 overflow-hidden relative border border-slate-100 mt-2">
                         <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
                         <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
                              <i class="fa-solid fa-bag-shopping text-3xl"></i>
+                        </div>
+                        <div v-if="item.type" class="absolute top-1 left-1 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full font-bold">
+                            {{ item.type }}
                         </div>
                     </div>
 
@@ -580,6 +618,7 @@ body {
             <i class="fa-solid fa-utensils text-xl mb-1" :class="currentTab === 'food' ? 'scale-110' : ''"></i>
             <span class="text-[10px] font-bold">美食</span>
         </button>
+        
         <div class="w-12"></div>
         
         <button @click="currentTab = 'shopping'" class="flex flex-col items-center justify-center w-12 transition-all" :class="currentTab === 'shopping' ? 'text-deep-sea-blue' : 'text-slate-300'">
@@ -642,6 +681,12 @@ body {
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">{{ isEditMode ? '編輯' : '新增' }}購物清單</h3>
             
             <input v-model="newShoppingItem.name" type="text" placeholder="商品名稱" class="w-full bg-slate-50 border-none rounded-xl p-4 mb-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
+            
+            <select v-model="newShoppingItem.type" class="w-full bg-slate-50 border-none rounded-xl p-4 mb-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
+                <option value="" disabled>請選擇分類</option>
+                <option v-for="cat in shoppingCategories.filter(c => c !== '全部')" :key="cat" :value="cat">{{ cat }}</option>
+            </select>
+
             <input v-model="newShoppingItem.image" type="text" placeholder="貼上圖片網址 (https://...)" class="w-full bg-slate-50 border-none rounded-xl p-4 mb-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
             <textarea v-model="newShoppingItem.note" placeholder="備註 (例如: 數量、口味、在哪買)" class="w-full bg-slate-50 border-none rounded-xl p-4 mb-4 focus:ring-2 focus:ring-deep-sea-blue text-sm h-20"></textarea>
             
@@ -666,6 +711,12 @@ body {
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">{{ isEditMode ? '編輯' : '新增' }}美食店家</h3>
             <div class="space-y-4 mb-6">
                 <input v-model="newFoodItem.name" type="text" placeholder="店家名稱" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
+                
+                <select v-model="newFoodItem.type" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
+                    <option value="" disabled>請選擇分類</option>
+                    <option v-for="cat in foodCategories.filter(c => c !== '全部')" :key="cat" :value="cat">{{ cat }}</option>
+                </select>
+
                 <input v-model="newFoodItem.address" type="text" placeholder="地址 (Google Map 搜尋用)" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
                 <input v-model="newFoodItem.image" type="text" placeholder="貼上圖片網址 (https://...)" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
                 
@@ -788,7 +839,7 @@ const { createApp, ref, computed, onMounted, watch } = Vue
 
 createApp({
     setup() {
-        const EXCHANGE_RATE = 0.205;
+        const EXCHANGE_RATE = 0.22;
         const CATEGORY_MAP = {
             sightseeing: { color: 'bg-green-500', icon: 'fa-solid fa-camera' },
             food: { color: 'bg-red-500', icon: 'fa-solid fa-utensils' },
@@ -1274,121 +1325,145 @@ createApp({
     {
         "name": "明月堂博多TORIMON",
         "image": "images/BUY-1.jpg",
+        "type": "伴手禮",
         "note": "這是福岡最經典最具代表性的伴手禮，有著奶香的餅皮與優質的白餡做成的通 是福岡的人氣土產。\n參考價格：5入770日幣、6入1,000日幣、9入1,500日幣"
     },
     {
         "name": "東雲堂 二〇加煎餅",
         "image": "images/BUY-2.jpg",
+        "type": "伴手禮",
         "note": "用好品質的小麥粉與蛋烤成的煎餅，累積至今已經賣了10億份以上。這個半臉面具已成為福岡的經典\n參考價格：特大煎餅3枚入648日圓、小煎餅16枚入864日圓"
     },
     {
         "name": "太宰府梅枝餅",
         "image": "images/BUY-3.jpg",
+        "type": "伴手禮",
         "note": "在太宰府的梅枝餅名店「 の家」、「茶房 」、「甘木屋」和「 武本店」都可以買到梅枝餅的土 禮盒，而「 の家」在博多站裡也買得到"
     },
     {
         "name": "福太郎 明太子仙貝",
         "image": "images/BUY-4.jpg",
+        "type": "伴手禮",
         "note": "福太郎的代表商品是各種口味的明太子仙貝。除了禮盒裝，還有一包一包的分裝，所以可以一次網羅各種口味。\n參考價格：2袋入180日幣、8袋入600日幣、16袋入1,200日幣"
     },
     {
         "name": "博多風美庵 明太子蝦餅",
         "image": "images/BUY-5.jpg",
+        "type": "伴手禮",
         "note": "用日本產的米以特殊的製法絞碎後再烤成的明太子蝦餅，有著酥脆的口感，是明太子系列商品的人氣選擇。"
     },
     {
         "name": "明太子名店ふくや",
         "image": "images/BUY-6.jpg",
+        "type": "伴手禮",
         "note": "各式各樣的明太子製品，其中可以直接擠出明太子醬的tubetube跟明太子口味的麵包脆餅是人氣商品。"
     },
     {
         "name": "如水庵 筑紫もち",
         "image": "images/BUY-7.jpg",
+        "type": "甜點",
         "note": "天正年間（1573～1591）開始在博多販賣和菓子的傳聞，現在最具代表性的名物便是筑紫麻糬。\n參考價格：3入584日幣、5入972日幣"
     },
     {
         "name": "石村萬盛堂 鶴乃子",
         "image": "images/BUY-8.jpg",
+        "type": "甜點",
         "note": "傳承百年以上的博多名菓，用棉花糖包覆蛋黃與手亡豆做成的內餡，是西日融合的圓形菓子。\n參考價格：4入756日圓、8入1,296日圓"
     },
     {
         "name": "吉野堂 ひよ子のたまご",
         "image": "images/BUY-9.jpg",
+        "type": "甜點",
         "note": "吉野堂有名的小雞蛋糕在博多站與小倉站有福岡限定口味的伴手禮-內餡為甘王草莓的「小雞的蛋」，如果覺得小雞蛋糕會太甜的話，可以試試這個略帶酸味的草莓糕點。"
     },
     {
         "name": "左衛門 博多ぶらぶら",
         "image": "images/BUY-10.jpg",
+        "type": "甜點",
         "note": "用北海道的紅豆包覆「求肥」，帶出自然簡單風味的博多名菓。\n所謂的求肥是指使用白玉粉做的甜點，口感比麻糬更為柔軟。"
     },
     {
         "name": "鈴懸 鈴乃〇餅",
         "image": "images/BUY-11.jpg",
+        "type": "甜點",
         "note": "和菓子名店鈴懸的代表性商品，使用佐賀產的糯米，手工燒烤的皮中是北海道十勝產的紅豆餡。"
     },
     {
         "name": "隆勝堂 鯛最中",
         "image": "images/BUY-12.jpg",
+        "type": "甜點",
         "note": "用有吉祥寓意的鯛做成的「最中」，裡面是自家製的八女抹茶餡，意外的和最中的皮很合"
     },
     {
         "name": " 久原本家 茅乃舍だし",
         "image": "images/BUY-13.jpg",
+        "type": "調味料",
         "note": "以烤飛魚、柴魚片、沙丁魚和昆布的粉末做成的素材包，讓你能方便的煮出道地的和風高湯。無論是味增湯還是其他煮物中都可以使用並增添其料理的風味。"
     },
     {
         "name": " 二鶴堂 博多の女（ひと",
         "image": "images/BUY-15.jpg",
+        "type": "甜點",
         "note": "以年輪蛋糕包裹羊羹之創新組合，搭配典雅的博多人形包裝，熱賣超過50年的福岡名產\n參考價格：6入389日圓、10入648日圓"
     },
     {
         "name": "三日月 可頌麵包",
         "image": "images/BUY-16.jpg",
+        "type": "麵包",
         "note": "使用高品質的三種小麥粉、天然鹽、高級奶油與天然酵母去製作麵團，並讓麵團在將近一天的低溫發酵中引出食材自然的美味。"
     },
     {
         "name": "さかえ屋 なんばん往来",
         "image": "images/BUY-17.jpg",
+        "type": "甜點",
         "note": "過去長崎對國外開放，從海外引進各種原料藉由長崎街道（如同絲路）送至江戶。以這個概念將南蠻文化與九州食材結合，誕生的美味伴手禮。\n參考價格：4入864日圓、8入1,728日圓"
     },
     {
         "name": "chiffon cake MARIE",
         "image": "images/BUY-18.jpg",
+        "type": "蛋糕",
         "note": "透過九州產的小麥粉、雞蛋、牛奶，並不含其他添加物製作的戚風蛋糕，最大特色是就算冷凍販售，卻在解凍後仍保有與現做蛋糕同樣的濕潤鬆軟，像是棉花糖般在口中融化。"
     },
     {
         "name": " Chocolateshop 博多の石畳",
         "image": "images/BUY-19.jpg",
+        "type": "巧克力",
         "note": "來自福岡自己的巧克力品牌。石畳的意思是石板，一個個生巧克力的樣子的確有幾分神似石板。"
     },
     {
         "name": "PRESS BUTTER SAND",
         "image": "images/BUY-20.jpg",
+        "type": "伴手禮",
         "note": "有推出九州限定的「甘王草莓」口味與福岡限定的「明太子起士口味」\n參考價格：5入1,377日圓、9入2,403日圓"
     },
     {
         "name": " 伊都きんぐ 甘王草莓銅鑼燒",
         "image": "images/BUY-21.jpg",
+        "type": "甜點",
         "note": "福岡最有名的甘王草莓伴手禮品牌，就是「伊都きんぐ」了。而這款以甘王草莓慕斯和果醬為內餡的銅鑼燒是他們家最為人氣的商品。"
     },
     {
         "name": "AMANBERRY草莓奶油餅乾",
         "image": "images/BUY-22.jpg",
+        "type": "餅乾",
         "note": "外層貓舌餅微脆，側邊還印有英文字精緻高級，裡面是香甜柔滑生巧克力奶油，點綴淡淡甘王草莓乾酸甜果香\n參考價格：5入864日圓、8入1,296日圓"
     },
     {
         "name": "YAMAYA軟管明太子醬",
         "image": "images/BUY-23.jpg",
+        "type": "調味料",
         "note": "熱銷超過百萬隻，牙膏式軟管方便擠壓料理，最夯粉色包裝「辛子明太子」口味，搭配法國麵包、明太子義大利麵、串燒、白飯等，濃厚微辣海味口口都是極品。\n冷藏保存，建議在機場免稅店買完，直接帶回台灣，參考價格：1條756日圓"
     },
     {
         "name": "福砂屋長崎蛋糕",
         "image": "images/BUY-24.jpg",
+        "type": "蛋糕",
         "note": "堅持傳統古法，職人純手工攪拌不用機器，蛋糕底部有明顯「砂糖結晶顆粒」是亮點，香甜濕潤，讓人回味無窮。\n參考價格：0.6號一條1,458日圓、1號一條2,268日圓"
     },
     {
         "name": "千鳥屋本家 捲心酥",
         "image": "images/BUY-25.jpg",
+        "type": "餅乾",
         "note": "奥地利提洛邦傳統餅乾捲，以新鮮牛乳和奶油製成，厚實超香脆，口味有抹茶、草莓、香草、咖啡四種。\n參考價格：捲心酥1罐1,800日幣"
     }
 ]);
@@ -1397,132 +1472,154 @@ createApp({
         "name": "Dacomecca",
         "note": "博多區有名麵包店，鹹甜評價高。推薦：香腸、坦都里烤雞、漢堡肉。",
         "address": "Dacomecca",
+        "type": "麵包",
         "image": "images/EAT-1.jpg"
     },
     {
         "name": "The Full Full Hakata",
         "note": "明太子法式麵包名店，運河城步行2分。週二公休。",
         "address": "The Full Full Hakata",
+        "type": "麵包",
         "image": "images/EAT-2.jpg"
     },
     {
         "name": "MIGNON 博多店",
         "note": "位於JR中央口。經典小可頌（巧克力、原味、地瓜）。",
         "address": "MIGNON 博多店",
+        "type": "甜點",
         "image": "images/EAT-3.jpg"
     },
     {
         "name": "Cafe Mutsukado",
         "note": "AMU PLAZA 5樓。主打生吐司，推薦蛋沙拉吐司&水果三明治。",
         "address": "Cafe Mutsukado",
+        "type": "咖啡廳",
         "image": "images/EAT-4.jpg"
     },
     {
         "name": "Pain Stock 天神店",
         "note": "中洲川端站步行4分。主打天然酵母麵包，明太子法棍需櫃檯點。",
         "address": "Pain Stock 天神店",
+        "type": "麵包",
         "image": "images/EAT-5.jpg"
     },
     {
         "name": "Truffle Bakery",
         "note": "木村拓哉推薦。招牌：白松露鹽麵包、黑松露蛋沙拉三明治。",
         "address": "mills by Truffle Bakery ソラリアステージ店",
+        "type": "麵包",
         "image": "images/EAT-6.jpg"
     },
     {
         "name": "博多一雙",
         "note": "豚骨泡沫系，又臭又香又難忘。",
         "address": "博多一雙",
+        "type": "拉麵",
         "image": "images/EAT-7.jpg"
     },
     {
         "name": "博多拉麵 ShinShin",
         "note": "濃郁卻清爽不膩。招牌：純情拉麵、博多強棒麵。",
         "address": "博多拉麵 ShinShin",
+        "type": "拉麵",
         "image": "images/EAT-8.jpg"
     },
     {
         "name": "麵屋兼虎",
         "note": "沾麵系霸主。招牌：味玉濃厚沾麵。",
         "address": "麵屋兼虎",
+        "type": "拉麵",
         "image": "images/EAT-9.jpg"
     },
     {
         "name": "大砲拉麵",
         "note": "久留米70年老店。獨家豚骨湯底。招牌：昔拉麵。",
         "address": "大砲ラーメン 天神今泉店",
+        "type": "拉麵",
         "image": "images/EAT-10.jpg"
     },
     {
         "name": "麵屋我ガ (Gaga)",
         "note": "傳為一蘭創辦人孫子開的。湯頭較濃郁。",
         "address": "麺屋我ガ 天神店",
+        "type": "拉麵",
         "image": "images/EAT-11.jpg"
     },
     {
         "name": "茶壺烏龍麵 (博多あかちょこべ)",
         "note": "特殊茶壺裝盛。麵條口感獨特。",
         "address": "茶壺烏龍麵 (博多あかちょこべ)",
+        "type": "烏龍麵",
         "image": "images/EAT-12.jpg"
     },
     {
         "name": "麵屋 Isii (Menya Ishii)",
         "note": "原創烏龍麵，口感滑順。",
         "address": "麵屋 Isii (Menya Ishii)",
+        "type": "烏龍麵",
         "image": "images/EAT-13.jpg"
     },
     {
         "name": "FUK COFFEE",
         "note": "大濠公園附近/祇園。昭和風布丁口感紮實。",
         "address": "FUK COFFEE",
+        "type": "咖啡廳",
         "image": "images/EAT-14.jpg"
     },
     {
         "name": "藍瓶咖啡 天神店",
         "note": "九州第一間。警固神社旁。",
         "address": "藍瓶咖啡 天神店",
+        "type": "咖啡廳",
         "image": "images/EAT-15.jpg"
     },
     {
         "name": "Coffee County",
         "note": "專注咖啡豆產地香氣。",
         "address": "Coffee County Fukuoka",
+        "type": "咖啡廳",
         "image": "images/EAT-16.jpg"
     },
     {
         "name": "Rec Coffee",
         "note": "現代簡約。推薦拿鐵系列&硬布丁。",
         "address": "Rec Coffee 福岡",
+        "type": "咖啡廳",
         "image": "images/EAT-17.jpg"
     },
     {
         "name": "かわ屋 (Kawaya)",
         "note": "招牌烤雞皮需6天燒烤熟成。",
         "address": "かわ屋 祇園店",
+        "type": "居酒屋",
         "image": "images/EAT-18.jpg"
     },
     {
         "name": "とりかわ粋恭 (Suikyo)",
         "note": "與Kawaya齊名，酥脆口感濃郁。",
         "address": "とりかわ粋恭 (Suikyo)",
+        "type": "居酒屋",
         "image": "images/EAT-19.jpg"
     },
     {
         "name": "博多雞皮大臣",
         "note": "在地人氣店，分醬燒與鹽燒。",
         "address": "博多雞皮大臣",
+        "type": "居酒屋",
         "image": "images/EAT-20.jpg"
     },
     {
         "name": "寶雲亭",
         "note": "一口餃子，外皮薄透。只靠洋蔥韭黃絞肉提味。",
         "address": "寶雲亭",
+        "type": "餃子",
         "image": "images/EAT-21.jpg"
     },
     {
         "name": "海木豆皮壽司",
         "note": "豆皮壽司界的愛馬仕。只收現金。",
         "address": "だしいなり 海木 福岡",
+        "type": "壽司",
         "image": "images/EAT-22.jpg"
     }
 ]);
@@ -1530,36 +1627,55 @@ createApp({
         // --- [資料區塊結束] ---
 
         const foodEditIndex = ref(null);
-        // 新增搜尋功能
+        // 新增搜尋與分類功能
         const foodSearchQuery = ref('');
+        const selectedFoodCategory = ref('全部');
+        const foodCategories = ref(['全部', '拉麵', '麵包', '咖啡廳', '甜點', '居酒屋', '烏龍麵', '餃子', '壽司', '其他']);
+
         const filteredFoodList = computed(() => {
-            if (!foodSearchQuery.value) {
-                return foodList.value.map((item, index) => ({ ...item, originalIndex: index }));
-            }
-            const query = foodSearchQuery.value.toLowerCase();
-            return foodList.value
-                .map((item, index) => ({ ...item, originalIndex: index }))
-                .filter(item => 
+            let list = foodList.value.map((item, index) => ({ ...item, originalIndex: index }));
+            
+            // 先過濾搜尋文字
+            if (foodSearchQuery.value) {
+                const query = foodSearchQuery.value.toLowerCase();
+                list = list.filter(item => 
                     item.name.toLowerCase().includes(query) || 
                     (item.note && item.note.toLowerCase().includes(query)) ||
                     (item.address && item.address.toLowerCase().includes(query))
                 );
+            }
+
+            // 再過濾分類
+            if (selectedFoodCategory.value !== '全部') {
+                list = list.filter(item => item.type === selectedFoodCategory.value);
+            }
+
+            return list;
         });
 
-        // 新增：購物搜尋功能
+        // 新增：購物搜尋與分類功能
         const shoppingSearchQuery = ref('');
+        const selectedShoppingCategory = ref('全部');
+        const shoppingCategories = ref(['全部', '伴手禮', '甜點', '餅乾', '蛋糕', '巧克力', '麵包', '調味料', '其他']);
+
         const filteredShoppingList = computed(() => {
-            // 如果沒有搜尋文字，回傳全部 (帶上 originalIndex 以便刪除/編輯正確項目)
-            if (!shoppingSearchQuery.value) {
-                return shoppingList.value.map((item, index) => ({ ...item, originalIndex: index }));
-            }
-            const query = shoppingSearchQuery.value.toLowerCase();
-            return shoppingList.value
-                .map((item, index) => ({ ...item, originalIndex: index }))
-                .filter(item => 
+            let list = shoppingList.value.map((item, index) => ({ ...item, originalIndex: index }));
+
+            // 先過濾搜尋文字
+            if (shoppingSearchQuery.value) {
+                const query = shoppingSearchQuery.value.toLowerCase();
+                list = list.filter(item => 
                     item.name.toLowerCase().includes(query) || 
                     (item.note && item.note.toLowerCase().includes(query))
                 );
+            }
+
+            // 再過濾分類
+            if (selectedShoppingCategory.value !== '全部') {
+                list = list.filter(item => item.type === selectedShoppingCategory.value);
+            }
+
+            return list;
         });
         
         const selectedDateIndex = ref(0);
@@ -1579,19 +1695,22 @@ createApp({
         const infoEditIndex = ref(null);
         const infoForm = ref({ origin: '', dest: '', code: '', depTime: '', arrTime: '', name: '', date: '', address: '', phone: '' });
         const newItinerary = ref({ id: null, name: '', category: 'sightseeing', startTime: '', hours: '', address: '', price: '', note: '', transportType: 'public', travelTime: '', isNoteExpanded: false, image: null });
-        const newShoppingItem = ref({ name: '', image: null, note: '' });
-        const newFoodItem = ref({ name: '', note: '', address: '', image: null });
+        const newShoppingItem = ref({ name: '', image: null, note: '', type: '' });
+        const newFoodItem = ref({ name: '', note: '', address: '', image: null, type: '' });
         const newExpense = ref({ name: '', amount: null, category: 'food', date: new Date().toISOString().substring(0, 10), payment: 'cash' });
         const currencyInput = ref(10000);
         const currencyResult = ref(0);
+        const exchangeRate = ref(0.215); // 新增：可變動匯率
 
         const currentItinerary = computed(() => {
             if (!itineraryData.value[selectedDateIndex.value]) itineraryData.value[selectedDateIndex.value] = [];
             return itineraryData.value[selectedDateIndex.value];
         });
         const totalExpensesJPY = computed(() => expenses.value.reduce((sum, exp) => sum + exp.amount, 0));
-        const totalExpensesTWD = computed(() => Math.round(totalExpensesJPY.value * EXCHANGE_RATE));
-        const calculateCurrency = () => { currencyResult.value = Math.round(currencyInput.value * EXCHANGE_RATE); };
+        // 修改：使用新的 exchangeRate 變數
+        const totalExpensesTWD = computed(() => Math.round(totalExpensesJPY.value * exchangeRate.value));
+        // 修改：使用新的 exchangeRate 變數
+        const calculateCurrency = () => { currencyResult.value = Math.round(currencyInput.value * exchangeRate.value); };
         const formatNumber = (num) => (num || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         const getCategoryColor = (c) => CATEGORY_MAP[c]?.color || CATEGORY_MAP.other.color;
         const getCategoryIcon = (c) => CATEGORY_MAP[c]?.icon || CATEGORY_MAP.other.icon;
@@ -1706,7 +1825,7 @@ createApp({
         const resetShoppingForm = () => { 
             isEditMode.value = false;
             shoppingEditIndex.value = null;
-            newShoppingItem.value = { name: '', image: null, note: '' }; 
+            newShoppingItem.value = { name: '', image: null, note: '', type: '' }; 
         };
         const handleImageUpload = (e, type) => {
             const file = e.target.files[0];
@@ -1739,7 +1858,7 @@ createApp({
         const resetFoodForm = () => { 
             isEditMode.value = false;
             foodEditIndex.value = null; 
-            newFoodItem.value = { name: '', note: '', address: '', image: null }; 
+            newFoodItem.value = { name: '', note: '', address: '', image: null, type: '' }; 
         };
         const editFoodItem = (index) => {
             isEditMode.value = true;
@@ -1772,8 +1891,8 @@ createApp({
         const removeExpense = (idx) => expenses.value.splice(idx, 1);
 
         // --- 自動存檔功能 (LocalStorage) ---
-        // 版本更新 v4
-        const STORAGE_KEY = 'fukuoka_trip_data_v4';
+        // 版本更新 v5 (資料結構更新)
+        const STORAGE_KEY = 'fukuoka_trip_data_v5';
         const saveToStorage = () => {
             const dataToSave = {
                 itineraryData: itineraryData.value,
@@ -1783,14 +1902,15 @@ createApp({
                 checkList: checkList.value,
                 hotelList: hotelList.value,
                 flightList: flightList.value,
-                memoText: memoText.value
+                memoText: memoText.value,
+                exchangeRate: exchangeRate.value
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
         };
 
         // 監聽資料變化
         watch(
-            [itineraryData, foodList, shoppingList, expenses, checkList, hotelList, flightList, memoText],
+            [itineraryData, foodList, shoppingList, expenses, checkList, hotelList, flightList, memoText, exchangeRate],
             () => { saveToStorage(); },
             { deep: true }
         );
@@ -1807,6 +1927,7 @@ createApp({
                     if(parsed.hotelList) hotelList.value = parsed.hotelList;
                     if(parsed.flightList) flightList.value = parsed.flightList;
                     if(parsed.memoText) memoText.value = parsed.memoText;
+                    if(parsed.exchangeRate) exchangeRate.value = parsed.exchangeRate;
                 } catch (e) {
                     console.error('讀取存檔失敗', e);
                 }
@@ -1847,9 +1968,9 @@ createApp({
         });
         return {
             currentTab, dates, selectedDateIndex, currentItinerary, hotelList, flightList, shoppingList, expenses, weatherData,
-            foodList, filteredFoodList, foodSearchQuery,
-            shoppingSearchQuery, filteredShoppingList, // 新增
-            currencyInput, currencyResult, totalExpensesJPY, totalExpensesTWD, EXCHANGE_RATE,
+            foodList, filteredFoodList, foodSearchQuery, selectedFoodCategory, foodCategories, // 新增分類相關
+            shoppingSearchQuery, filteredShoppingList, selectedShoppingCategory, shoppingCategories, // 新增分類相關
+            currencyInput, currencyResult, totalExpensesJPY, totalExpensesTWD, EXCHANGE_RATE, exchangeRate, 
             checkList, newChecklistItem, memoText, parsedLinks,
             showShoppingModal, showExpenseModal, showItineraryModal, showInfoModal, showFoodModal, showExportModal, isEditMode, 
             newShoppingItem, newExpense, newItinerary, 
@@ -1859,11 +1980,10 @@ createApp({
             openInfoModal, editInfoItem, saveInfoItem, removeFlight, removeHotel,
             addFoodItem, removeFoodItem, editFoodItem, resetFoodForm, 
             addChecklistItem, removeChecklistItem, generateExportCode,
-            resetData // 匯出重置功能
+            resetData
         };
     }
 }).mount('#app');
 </script>
 </body>
 </html>
-
