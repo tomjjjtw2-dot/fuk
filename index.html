@@ -94,6 +94,7 @@ body {
     color: #5D4037;
     text-shadow: 0 2px 15px rgba(255, 255, 255, 0.9), 0 0 5px rgba(255, 255, 255, 1);
     z-index: 20;
+    width: 80%; /* 避免蓋到右邊按鈕 */
 }
 
 .app-main {
@@ -175,7 +176,7 @@ body {
     padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* 新增：分類標籤按鈕樣式 */
+/* 分類標籤按鈕樣式 */
 .category-pill {
     padding: 6px 14px;
     border-radius: 999px;
@@ -209,8 +210,13 @@ body {
             </video>
             
             <div class="title-overlay">
-                <h1 class="text-3xl font-bold">Fukuoka</h1>
-                <p class="text-sm font-bold mt-1 text-slate-700">12/13 - 12/17 聖誕市集之旅</p>
+                <div class="flex items-center">
+                    <h1 class="text-3xl font-bold">{{ tripSettings.title }}</h1>
+                    <button @click="showTitleModal = true" class="ml-2 bg-white/30 backdrop-blur-sm p-1.5 rounded-full hover:bg-white/50 transition-colors">
+                        <i class="fa-solid fa-pencil text-sm text-white"></i>
+                    </button>
+                </div>
+                <p class="text-sm font-bold mt-1 text-slate-700">{{ tripSettings.subtitle }}</p>
             </div>
         </div>
 
@@ -222,12 +228,21 @@ body {
     <main class="p-4 app-main">
 
         <div v-if="currentTab === 'itinerary'" class="animate-fade-in">
-            <div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-4 mb-2 snap-x px-1 sticky date-selector-sticky pt-1 -mx-4 px-4">
+            <div class="flex overflow-x-auto hide-scrollbar space-x-3 pb-4 mb-2 snap-x px-1 sticky date-selector-sticky pt-1 -mx-4 px-4 items-center">
                 <div v-for="(day, index) in dates" :key="index" @click="selectedDateIndex = index"
                     class="snap-center flex-shrink-0 w-[58px] h-[68px] rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border-2 shadow-sm"
                     :class="selectedDateIndex === index ? 'bg-deep-sea-blue text-white border-deep-sea-blue shadow-lg scale-105' : 'bg-white text-slate-400 border-white hover:bg-soft-gray'">
                     <span class="text-sm font-bold uppercase tracking-wider">{{ day.weekday }}</span>
                     <span class="text-xs font-medium opacity-70">{{ day.date }}</span>
+                </div>
+                
+                <div class="flex flex-col space-y-1 ml-1 pl-2 border-l border-slate-100">
+                    <button @click="addNewDay" class="w-8 h-8 rounded-full bg-slate-100 text-deep-sea-blue hover:bg-deep-sea-blue hover:text-white transition-colors flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                    </button>
+                    <button v-if="dates.length > 1" @click="removeLastDay" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:bg-red-100 hover:text-red-500 transition-colors flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-minus text-xs"></i>
+                    </button>
                 </div>
             </div>
 
@@ -280,7 +295,7 @@ body {
                                 <p class="text-slate-600 font-bold mb-1 flex items-center">
                                     <i class="fa-solid fa-highlighter text-accent-yellow mr-2"></i> 備註
                                 </p>
-                                <div class="note-content" :class="{'expanded': item.isNoteExpanded}">
+                                <div class="note-content whitespace-pre-line" :class="{'expanded': item.isNoteExpanded}">
                                      {{ item.note }}
                                 </div>
                                 <button v-if="item.note.length > 50" @click="item.isNoteExpanded = !item.isNoteExpanded" class="text-deep-sea-blue font-bold mt-1 block">
@@ -642,6 +657,25 @@ body {
         <i class="fa-solid fa-plus"></i>
     </button>
 
+    <div v-if="showTitleModal" @click.self="showTitleModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+            <h3 class="font-bold text-lg mb-5 text-center text-slate-800">修改旅程標題</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-400 ml-1">主標題</label>
+                    <input v-model="tripSettings.title" type="text" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 ml-1">副標題 (日期/說明)</label>
+                    <input v-model="tripSettings.subtitle" type="text" class="w-full bg-slate-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-deep-sea-blue text-sm">
+                </div>
+            </div>
+            <div class="flex space-x-3 mt-6">
+                <button @click="showTitleModal = false" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">完成</button>
+            </div>
+        </div>
+    </div>
+
     <div v-if="showInfoModal" @click.self="showInfoModal = false" class="fixed inset-0 bg-deep-sea-blue/40 z-[70] flex items-center justify-center p-6 backdrop-blur-sm animate-fade-in">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
             <h3 class="font-bold text-lg mb-5 text-center text-slate-800">
@@ -862,6 +896,14 @@ createApp({
             sightseeing: '景點', food: '飲食', shopping: '購物', accommodation: '住宿', flight: '航班', transport: '交通', ticket: '門票', other: '其他', stay: '住宿'
         };
         const currentTab = ref('itinerary');
+        
+        // 新增：旅程設定 (標題、副標題)
+        const tripSettings = ref({
+            title: 'Fukuoka',
+            subtitle: '12/13 - 12/17 聖誕市集之旅'
+        });
+        const showTitleModal = ref(false);
+
         const dates = ref([
             { date: '12/13', weekday: '六', hasCar: false },
             { date: '12/14', weekday: '日', hasCar: false },
@@ -1707,16 +1749,16 @@ createApp({
         const newExpense = ref({ name: '', amount: null, category: 'food', date: new Date().toISOString().substring(0, 10), payment: 'cash' });
         const currencyInput = ref(10000);
         const currencyResult = ref(0);
-        const exchangeRate = ref(0.215); // 新增：可變動匯率
+        const exchangeRate = ref(0.215); 
 
         const currentItinerary = computed(() => {
             if (!itineraryData.value[selectedDateIndex.value]) itineraryData.value[selectedDateIndex.value] = [];
             return itineraryData.value[selectedDateIndex.value];
         });
         const totalExpensesJPY = computed(() => expenses.value.reduce((sum, exp) => sum + exp.amount, 0));
-        // 修改：使用新的 exchangeRate 變數
+        
         const totalExpensesTWD = computed(() => Math.round(totalExpensesJPY.value * exchangeRate.value));
-        // 修改：使用新的 exchangeRate 變數
+        
         const calculateCurrency = () => { currencyResult.value = Math.round(currencyInput.value * exchangeRate.value); };
         const formatNumber = (num) => (num || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         const getCategoryColor = (c) => CATEGORY_MAP[c]?.color || CATEGORY_MAP.other.color;
@@ -1897,11 +1939,36 @@ createApp({
         };
         const removeExpense = (idx) => expenses.value.splice(idx, 1);
 
+        // 新增天數
+        const addNewDay = () => {
+            const dateStr = prompt('請輸入日期 (例如 12/18)', '');
+            if(!dateStr) return;
+            const weekStr = prompt('請輸入星期 (例如 四)', '');
+            if(!weekStr) return;
+            
+            dates.value.push({ date: dateStr, weekday: weekStr, hasCar: false });
+            itineraryData.value.push([]); // 新增對應的空白行程
+        };
+
+        // 移除最後一天
+        const removeLastDay = () => {
+            if(dates.value.length <= 1) return alert('至少保留一天');
+            if(confirm('確定要刪除最後一天的行程嗎？(此操作無法復原)')) {
+                dates.value.pop();
+                itineraryData.value.pop();
+                if(selectedDateIndex.value >= dates.value.length) {
+                    selectedDateIndex.value = dates.value.length - 1;
+                }
+            }
+        };
+
         // --- 自動存檔功能 (LocalStorage) ---
-        // 版本更新 v5 (資料結構更新)
-        const STORAGE_KEY = 'fukuoka_trip_data_v5';
+        // 版本更新 v6
+        const STORAGE_KEY = 'fukuoka_trip_data_v6';
         const saveToStorage = () => {
             const dataToSave = {
+                tripSettings: tripSettings.value, // 新增儲存設定
+                dates: dates.value,               // 新增儲存日期
                 itineraryData: itineraryData.value,
                 foodList: foodList.value,
                 shoppingList: shoppingList.value,
@@ -1917,7 +1984,7 @@ createApp({
 
         // 監聽資料變化
         watch(
-            [itineraryData, foodList, shoppingList, expenses, checkList, hotelList, flightList, memoText, exchangeRate],
+            [tripSettings, dates, itineraryData, foodList, shoppingList, expenses, checkList, hotelList, flightList, memoText, exchangeRate],
             () => { saveToStorage(); },
             { deep: true }
         );
@@ -1926,6 +1993,8 @@ createApp({
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
+                    if(parsed.tripSettings) tripSettings.value = parsed.tripSettings; // 讀取設定
+                    if(parsed.dates) dates.value = parsed.dates; // 讀取日期
                     if(parsed.itineraryData) itineraryData.value = parsed.itineraryData;
                     if(parsed.foodList) foodList.value = parsed.foodList;
                     if(parsed.shoppingList) shoppingList.value = parsed.shoppingList;
@@ -1975,8 +2044,8 @@ createApp({
         });
         return {
             currentTab, dates, selectedDateIndex, currentItinerary, hotelList, flightList, shoppingList, expenses, weatherData,
-            foodList, filteredFoodList, foodSearchQuery, selectedFoodCategory, foodCategories, // 新增分類相關
-            shoppingSearchQuery, filteredShoppingList, selectedShoppingCategory, shoppingCategories, // 新增分類相關
+            foodList, filteredFoodList, foodSearchQuery, selectedFoodCategory, foodCategories, 
+            shoppingSearchQuery, filteredShoppingList, selectedShoppingCategory, shoppingCategories, 
             currencyInput, currencyResult, totalExpensesJPY, totalExpensesTWD, EXCHANGE_RATE, exchangeRate, 
             checkList, newChecklistItem, memoText, parsedLinks,
             showShoppingModal, showExpenseModal, showItineraryModal, showInfoModal, showFoodModal, showExportModal, isEditMode, 
@@ -1987,11 +2056,12 @@ createApp({
             openInfoModal, editInfoItem, saveInfoItem, removeFlight, removeHotel,
             addFoodItem, removeFoodItem, editFoodItem, resetFoodForm, 
             addChecklistItem, removeChecklistItem, generateExportCode,
-            resetData
+            resetData,
+            // 新增功能
+            tripSettings, showTitleModal, addNewDay, removeLastDay
         };
     }
 }).mount('#app');
 </script>
 </body>
 </html>
-
