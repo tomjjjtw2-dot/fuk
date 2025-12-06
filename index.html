@@ -247,9 +247,14 @@ body {
                         <span class="block text-xs text-slate-600 mt-1">降雨率: {{ weatherData[selectedDateIndex].chance }}%</span>
                     </div>
                 </div>
-                <div class="text-right text-xs text-slate-600 pl-3">
+                <div class="text-right text-xs text-slate-600 pl-3 flex flex-col items-end">
                     <span class="font-bold block text-slate-700">{{ getWeatherDescription(weatherData[selectedDateIndex].condition) }}</span>
-                    <span class="mt-1 block text-slate-400">大眾運輸為主</span>
+                    <span class="mt-1 block text-slate-400 mb-1">大眾運輸為主</span>
+                    
+                    <a href="https://tenki.jp/forecast/9/43/8210/40130/" target="_blank" class="flex items-center bg-white border border-deep-sea-blue text-deep-sea-blue px-3 py-1 rounded-full hover:bg-deep-sea-blue hover:text-white transition-all shadow-sm">
+                        <i class="fa-solid fa-cloud-sun mr-1"></i> 
+                        <span class="font-bold">Tenki.jp 真實天氣</span>
+                    </a>
                 </div>
             </div>
 
@@ -1517,7 +1522,6 @@ createApp({
         "note": "奥地利提洛邦傳統餅乾捲，以新鮮牛乳和奶油製成，厚實超香脆，口味有抹茶、草莓、香草、咖啡四種。\n參考價格：捲心酥1罐1,800日幣"
     }
 ]);
-
         const foodList = ref([
     {
         "name": "Dacomecca",
@@ -1751,7 +1755,7 @@ createApp({
         const newExpense = ref({ name: '', amount: null, category: 'food', date: new Date().toISOString().substring(0, 10), payment: 'cash' });
         const currencyInput = ref(10000);
         const currencyResult = ref(0);
-        const exchangeRate = ref(0.205); 
+        const exchangeRate = ref(0.215); 
 
         const currentItinerary = computed(() => {
             if (!itineraryData.value[selectedDateIndex.value]) itineraryData.value[selectedDateIndex.value] = [];
@@ -1965,8 +1969,8 @@ createApp({
         };
 
         // --- 自動存檔功能 (LocalStorage) ---
-        // 版本更新 v8
-        const STORAGE_KEY = 'fukuoka_trip_data_v8';
+        // 版本更新 v9
+        const STORAGE_KEY = 'fukuoka_trip_data_v9';
         const saveToStorage = () => {
             const dataToSave = {
                 tripSettings: tripSettings.value, 
@@ -2043,7 +2047,7 @@ createApp({
         // 新增：連結轉換功能
         const formatNoteWithLinks = (text) => {
             if (!text) return '';
-            let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            let safeText = text.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">").replace(/"/g, """).replace(/'/g, "'");
             const urlRegex = /(https?:\/\/[^\s]+)/g;
             const withLinks = safeText.replace(urlRegex, '<a href="$1" target="_blank" class="text-blue-600 underline break-all" onclick="event.stopPropagation()">$1</a>');
             return withLinks.replace(/\n/g, '<br>');
@@ -2076,4 +2080,3 @@ createApp({
 </script>
 </body>
 </html>
-
